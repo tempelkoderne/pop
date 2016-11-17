@@ -1,0 +1,19 @@
+Opgaveløsningen skal dokumenteres som en rapport skrevet i LaTeX på maksimalt 20 oversatte sider ekslusiv bilag, der som minimum indeholder
+– En forside med en titel, dato for afleveringen og jeres navne
+– En forord som kort beskriver omstændighederne ved opgaven
+– En analyse af problemet
+– En beskrivelse af de valg, der er foretaget inklusiv en kort gennemgang af alternativerne
+– En beskrivelse af det overordnede design, f.eks. som pseudokode
+– En programbeskrivelse
+– En brugervejledning
+– En beskrivelse af afprøvningens opbygning
+– En konklusion
+– Afprøvningsresultatet som bilag (TOS: Udskrift fra terminalen efter kørsel?)
+– Programtekst som bilag (TOS: .fsx filen?)
+
+
+FORSIDE
+    Mastermindrapport
+    Afleveres fredag d. 30. november 2016
+    Udarbejdet af Anders Geil, Peter Lim og Tobias Stannius
+
