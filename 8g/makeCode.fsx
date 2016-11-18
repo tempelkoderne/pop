@@ -84,7 +84,7 @@ let generateCode () =
                 colors.[rand.Next(0,5)]]
     code
 
-// makeCode virker. Den returnerer 1, hvis input er Human.
+// makeCode tager en spillertype og kalder en passende funktion, som returnerer en code.
 let makeCode (user : player) =
     if user = Human then
         enterCode ()
