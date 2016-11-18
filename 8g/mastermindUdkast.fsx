@@ -32,7 +32,7 @@ let enterCode() =
         | h::t when h.[0] = 'p' -> Purple::(formatCode t)
         | h::t when h.[0] = 'w' -> White::(formatCode t)
         | h::t when h.[0] = 'b' -> Black::(formatCode t)
-        | h::t -> printfn "What did you mean by \"%s\"?" h;
+        | h::t -> printfn "Your pick must match the colours listed above.\nWhat did you mean by \"%s\"?" h;
                   formatCode (System.Console.ReadLine().ToLower()::t)
     inputCode()
 
@@ -53,34 +53,32 @@ let makeCode (user : player) =
     if user = Human then
         enterCode ()
     else
-        printfn "computer laver kode"
         generateCode ()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-let validate (gCode : code) (sCode : code) =
+let validate (guess : code) (code : code) =
     // count blacks
-    let blacks (gCode : code) (sCode : code) =
+    let blacks (guess : code) (code : code) =
         let rec hits l1 l2 =
             match (l1, l2) with
             | ([],_) -> 0
             | (_,[]) -> 0
             | (gh::gt, sh::st) -> if gh = sh then 1 + (hits gt st)
                                   else 0 + (hits gt st)
-        let blacks = hits gCode sCode
+        let blacks = hits guess code
         blacks
 
     // count whites
-    let whites (gCode : code) (sCode : code) =
+    let whites (guess : code) (code : code) =
         let rec notBlacks l1 l2 =
             match (l1, l2) with
             | ([],_) -> []
             | (_,[]) -> []
             | (gh::gt,sh::st) -> if gh = sh then notBlacks gt st
                                  else gh::(notBlacks gt st)
-        let sortedNotBlacks = (List.sortBy (fun elem -> elem) (notBlacks gCode sCode),
-                               List.sortBy (fun elem -> elem) (notBlacks sCode gCode))
+        let sortedNotBlacks = (List.sortBy (fun elem -> elem) (notBlacks guess code),
+                               List.sortBy (fun elem -> elem) (notBlacks code guess))
         let rec intersect (lists : codeColor list * codeColor list) =
             match lists with
             | ([],_) -> 0
@@ -92,7 +90,7 @@ let validate (gCode : code) (sCode : code) =
         intersect sortedNotBlacks
 
     // return guess with blacks & whites
-    (((blacks gCode sCode), (whites gCode sCode)))
+    (((blacks guess code), (whites guess code)))
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108,6 +106,14 @@ let printBoard (aBoard : board) =
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+let guess (playerType : player) (currentBoard : board) =
+    if currentBoard.Length < 20 then
+        if playerType = Human then
+            enterCode ()
+        else
+            generateCode ()
+    else
+        [Black;Black;Black;Black]
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -122,18 +128,16 @@ printfn "__          __  __                            _          __  __        
                                                                                                               
                                                                                                               "
 
-printfn "Press any key to continue."
+printf "%70s" "Press any key to continue."
 System.Console.ReadKey() |> ignore
 System.Console.Clear();;
 
-printfn "Immerse yourself  through the power of your keyboard!  In this game you"
-printfn "will be  required  to enter one  or several characters.  Your choice is" 
+printfn "Immerse yourself  through the power of your keyboard!  During this game"
+printfn "you will be  asked to enter  one or several characters.  Your choice is" 
 printfn "confirmed by pressing Enter. Let's try it out!"
 printfn ""
 printfn "Enter [M]astermind."
 printfn "(You can either type 'mastermind' or 'm' and press [Enter] to confirm)."
-
-// Tutorial.
 
 let rec tutorial () =
     let input = ((System.Console.ReadLine ()).ToLower())
@@ -154,82 +158,113 @@ tutorial ()
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// gameFlow.
-let mutable playmore = 0
+// gameFlow. Initialiserer spillet, sætter variable og kontrollerer flow.
 
-while playmore = 0 do
-        printfn "Press any key to continue."      
-        System.Console.ReadKey() |> ignore //Cleaner skærmen når man trykker på tastaturet
-        System.Console.Clear()
-        let codeMaker = //Vælger hvem der laver koden
-            printf "Who should be the code maker? ([C]omputer / [H]uman) \n" 
-            let valg = ((System.Console.ReadLine ()).ToLower())
-            if valg.Length > 0 then
-                if valg.[0] = 'c' then
-                    printfn "Code Maker: Computer"
-                    Computer
+let gameFlow () =
+    let mutable playmore = 1
+    while playmore = 1 do
+            System.Console.Clear()
+            
+            // Sætter hvem der laver koden afhængigt af input.
+            let codeMaker =
+                printf "Choose a code maker ([C]omputer / [H]uman):\n" 
+                let valg = ((System.Console.ReadLine ()).ToLower())
+                if valg.Length > 0 then
+                    if valg.[0] = 'c' then
+                        printfn "Code Maker: Computer"
+                        printfn "Code generated!\n"
+                        Computer
+                    else
+                        printfn "Code Maker: Human"
+                        Human
                 else
-                    printfn "Code Maker: Human"
-                    Human
-            else
-                    printfn "Code Maker: Human"
-                    Human
-        let secretCode = makeCode(codeMaker) //Sætter den hemmelige kode
-        let codeBreaker =
-            printf "Who should be the code breaker? ([C]omputer / [H]uman) \n"  //Vælger hvem kodeløseren skal være
-            let valg = ((System.Console.ReadLine ()).ToLower())
-            if valg.Length > 0 then
-                if valg.[0] = 'c' then
-                    printfn "Code Breaker: Computer"
-                    Computer
+                        printfn "Code Maker: Human"
+                        Human
+            
+            // Sætter den hemmelige kode afhængigt af hvem der er codeMaker. TOS: Ville foretrække at have denne efter codemaker og codeBreaker.
+            let secretCode = (makeCode codeMaker)
+
+            // Sætter hvem der gætter koden afhængigt af input.
+            let codeBreaker =
+                printf "Choose a code breaker ([C]omputer / [H]uman):\n"  //Vælger hvem kodeløseren skal være
+                let valg = ((System.Console.ReadLine ()).ToLower())
+                if valg.Length > 0 then
+                    if valg.[0] = 'c' then
+                        printfn "Code Breaker: Computer"
+                        Computer
+                    else
+                        printfn "Code Breaker: Human"
+                        Human
                 else
-                    printfn "Code Breaker: Human"
-                    Human
-            else
-                    printfn "Code Breaker: Human"
-                    Human
-        printfn "Press any key to continue."
-        System.Console.ReadKey() |> ignore
-        System.Console.Clear() //Cleaner skærmen og gør klar til kodeløseren
-        let mutable life = 8 //Sætter livet 
-        let mutable masterboard = [] //Sætter masterboardet op
-        if codeBreaker = Human then
+                        printfn "Code Breaker: Human"
+                        Human
+            
+            // Initialiserer gætte-fasen.
+            System.Console.Clear()
+            printfn "Press any key to start the game!"
+            System.Console.ReadKey() |> ignore
+            System.Console.Clear()
+            let mutable life = 8 // Sætter livet. Bør måske ændres, så vi udnytter, at guess tager masterBoard som argument.  
+            let mutable masterBoard = [] //Sætter masterBoardet op
+            
+            // snip til fordel for brug af guess - til gengæld kan computeren ikke køre uendeligt nu, til den gætter rigtigt.
             while life > 0 do
                 System.Console.Clear()
-                printfn "Life: %A" life
-                printfn "%s" (printBoard masterboard)
-                let mutable guesscode = enterCode()
-                let mutable valiguess = (validate secretCode guesscode)
-                masterboard <- masterboard @ [(guesscode), (valiguess)] 
+                printfn "Life: %A\n" life
+                printfn "%s" (printBoard masterBoard)
+                let mutable guessCode = (guess codeBreaker masterBoard) // Bemærk: vi udnytter ikke, at guess tager masterBoard! Kan måske omdannes til at styre hvornår spillet slutter?
+                let mutable validateGuess = (validate secretCode guessCode)
+                masterBoard <- masterBoard @ [(guessCode), (validateGuess)] 
                 life <- life - 1
-                if (validate secretCode guesscode) = (4,0) then //Hvis løsningen gættes. 
+                if (validate secretCode guessCode) = (4,0) then //Hvis løsningen gættes. 
                     life <- life - 30
                 else
                     ()
-        else 
-            life <- 0
-            while life >= 0 do
+            if life < -1 then
+                printfn "The secret code was: %A" secretCode 
+                printfn "Game over! You won!"
+            else
+                printfn "The secret code was: %A" secretCode
+                printfn "Game over! You lost!"
+            
+            // Genstart funktion.
+            printfn "Do you want to play again? ([Y]es / [N]o)"
+            let restart = ((System.Console.ReadLine ()).ToLower())
+            if restart.[0] = 'y' then
                 System.Console.Clear()
-                printfn "Turns: %A" life
-                printfn "%s" (printBoard masterboard)
-                let mutable guesscode1 = makeCode(Computer)
-                let mutable valiguess = (validate secretCode guesscode1)
-                masterboard <- masterboard @ [(guesscode1), (valiguess)] 
-                life <- life + 1
-                if (validate secretCode guesscode1) = (4,0) then
-                    life <- life - 999999
-                else
-                    ()
-        if life < -1 then
-            printfn "The secret code was: %A" secretCode 
-            printfn "Game over! You won!"
-        else
-            printfn "The secret code was: %A" secretCode
-            printfn "Game over! You Lost!"
-        printfn "Do you want to play again? ([Y]es / [N]o)"
-        let playAgain = ((System.Console.ReadLine ()).ToLower())
-        if playAgain.[0] = 'y' then
-            System.Console.Clear()
-            playmore <- 0
-        else
-            playmore <- 1
+                playmore <- 1
+            else
+                System.Console.Clear()
+                printfn "Goodbye."
+                playmore <- 0
+
+gameFlow ()
+
+// paste
+//         if codeBreaker = Human then
+//             while life > 0 do
+//                 System.Console.Clear()
+//                 printfn "Life: %A\n" life
+//                 printfn "%s" (printBoard masterBoard)
+//                 let mutable guessCode = enterCode()
+//                 let mutable validateGuess = (validate secretCode guessCode)
+//                 masterBoard <- masterBoard @ [(guessCode), (validateGuess)] 
+//                 life <- life - 1
+//                 if (validate secretCode guessCode) = (4,0) then //Hvis løsningen gættes. 
+//                     life <- life - 30
+//                 else
+//                     ()
+//         else 
+//             life <- 0
+//             while life >= 0 do
+//                 System.Console.Clear()
+//                 printfn "Turns: %A" life
+//                 printfn "%s" (printBoard masterBoard)
+//                 let mutable guessCode1 = makeCode(Computer)
+//                 let mutable validateGuess = (validate secretCode guessCode1)
+//                 masterBoard <- masterBoard @ [(guessCode1), (validateGuess)] 
+//                 life <- life + 1
+//                 if (validate secretCode guessCode1) = (4,0) then
+//                     life <- life - 999999
+//                 else
+//                     ()
