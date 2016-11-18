@@ -77,8 +77,8 @@ let validate (guess : code) (code : code) =
             | (_,[]) -> []
             | (gh::gt,sh::st) -> if gh = sh then notBlacks gt st
                                  else gh::(notBlacks gt st)
-        let sortedNotBlacks = (List.sortBy (fun elem -> elem) (notBlacks guess code),
-                               List.sortBy (fun elem -> elem) (notBlacks code guess))
+        let sortedNotBlacks = (List.sortBy (id) (notBlacks guess code),
+                               List.sortBy (id) (notBlacks code guess))
         let rec intersect (lists : codeColor list * codeColor list) =
             match lists with
             | ([],_) -> 0
