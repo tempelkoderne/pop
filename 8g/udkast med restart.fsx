@@ -109,15 +109,8 @@ let printBoard (aBoard : board) =
         stringBoard <- stringBoard + (sprintf "%-6s" (sprintf "%A" (snd (aBoard.[i])))) +  "\n" // Løber gennem det andet element, et answer, i hver tuple i board og skriver det til stringBoard
     stringBoard
 
-(*
-// Et board til test af printBoard.
-let testBoard : board = [([Red;Red;Green;Green],(1,1)([Yellow;Yellow;Purple;Purple],(1,1));([White;Black;Purple;Purple],(0,0));]
 
-// Tester printBoard med testBoard.
-printfn "%s" (printBoard testBoard)
-*)
-
-///////////////////////////////////////////////Anders Kode//////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 let humanGuess() =
     let rec inputCode() =
@@ -160,20 +153,17 @@ let intro = "__          __  __                            _          __  __    
 
 let pressto = "Press any key to continue:"
 
-(*Vi er gået væk fra indeksering da det kan crashe programmet hvis man bare trykker enter. *)
-(* Vi er gået tilbage til indeksering fordi det er coolt, og fordi vi har fixet det med for loops. *)
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 let mutable playmore = 0
 
 while playmore = 0 do
-        printfn "%s" intro
-        printfn "%A" pressto
-        System.Console.ReadKey() |> ignore
+        printfn "%s" intro //printer intro skærmen ud
+        printfn "%A" pressto //printer "press any key to continue ud"
+        System.Console.ReadKey() |> ignore //Cleaner skærmen når man trykker på tastaturet
         System.Console.Clear()
-        let whoCodeMaker =
+        let whoCodeMaker = //Vælger hvem der laver koden
             printf "Who should be the code maker? (Computer (C)/ Human (H)) \n" 
             let valg = ((System.Console.ReadLine ()).ToLower())
             if valg.Length > 0 then
@@ -186,9 +176,9 @@ while playmore = 0 do
             else
                     printfn "Code Maker: Human"
                     Human
-        let Secretcode = makeCode(whoCodeMaker)
+        let Secretcode = makeCode(whoCodeMaker) //Sætter den hemmelige kode
         let whoCodeBreaker =
-            printf "Who should be the code breaker? (Computer (C)/ Human (H)) \n" 
+            printf "Who should be the code breaker? (Computer (C)/ Human (H)) \n"  //Vælger hvem kodeløseren skal være
             let valg = ((System.Console.ReadLine ()).ToLower())
             if valg.Length > 0 then
                 if valg.[0] = 'c' then
@@ -202,9 +192,9 @@ while playmore = 0 do
                     Human
         printfn "%A" pressto
         System.Console.ReadKey() |> ignore
-        System.Console.Clear()
-        let mutable life = 8
-        let mutable masterboard = []
+        System.Console.Clear() //Cleaner skærmen og gør klar til kodeløseren
+        let mutable life = 8 //Sætter livet 
+        let mutable masterboard = [] //Sætter masterboardet op
         if whoCodeBreaker = Human then
             while life > 0 do
                 System.Console.Clear()
@@ -214,7 +204,7 @@ while playmore = 0 do
                 let mutable valiguess = (validate Secretcode guesscode)
                 masterboard <- masterboard @ [(guesscode), (valiguess)] 
                 life <- life - 1
-                if (validate Secretcode guesscode) = (4,0) then
+                if (validate Secretcode guesscode) = (4,0) then //Hvis løsningen gættes. 
                     life <- life - 30
                 else
                     ()
@@ -248,17 +238,3 @@ while playmore = 0 do
 
 
         
-
-(*
-
-// En secret code til test.
-let sCode = Secretcode
-// En guess code til test.
-let gCode = guesser
-printfn "%A" (validate sCode gCode)
-
-*)
-    
-
-
-//let gameboard (aB t testBoard : board = [([Red;Red;Green;Green],(1,1);([Yellow;Yellow;Purple;Purple],(1,1));([White;Black;Purple;Purple],(0,0));]
