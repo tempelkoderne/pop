@@ -162,18 +162,35 @@ printfn "__          __  __                            _          __  __        
 
 (*Intro skærm kan altid ændres*)
 
-printf "Press any key to continue:"
+printf "Press any key to continue."
 System.Console.ReadKey() |> ignore
 System.Console.Clear();;
+
+printfn "Immerse yourself through the power of your keyboard!"
+printfn "Type the character within the [b]rackets and press [Enter] to continue."
+
+let rec tutorial () =
+    let input = ((System.Console.ReadLine ()).ToLower())
+    if input.Length > 0 then
+        if input.[0] = 'b' then
+            System.Console.Clear()
+        else
+            printfn "You must type the character 'b' and press [Enter] to continue."
+            tutorial ()
+    else
+        printfn "You must type the character 'b' and press [Enter] to continue."
+        tutorial ()
+
+tutorial ()
 
 (*Vi er gået væk fra indeksering da det kan crashe programmet hvis man bare trykker enter. *)
 (* Vi er gået tilbage til indeksering fordi det er coolt, og fordi vi har fixet det med for loops. *)
 
-let whoCodeMaker =
-    printf "Who should be the code maker? (Computer (C)/ Human (H)) \n" 
-    let valg = ((System.Console.ReadLine ()).ToLower())
-    if valg.Length > 0 then
-        if valg.[0] = 'c' then
+let codeMaker =
+    printf "Who should be the code maker? ([C]omputer / [H]uman) \n" 
+    let input = ((System.Console.ReadLine ()).ToLower())
+    if input.Length > 0 then
+        if input.[0] = 'c' then
             printfn "Code Maker: Computer"
             Computer
         else
@@ -183,16 +200,16 @@ let whoCodeMaker =
             printfn "Code Maker: Human"
             Human
 
-let Secretcode = makeCode(whoCodeMaker)
+let secretCode = makeCode(codeMaker)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-let whoCodeBreaker =
+let codeBreaker =
     printf "Who should be the code breaker? (Computer (C)/ Human (H)) \n" 
-    let valg = ((System.Console.ReadLine ()).ToLower())
-    if valg.Length > 0 then
-        if valg.[0] = 'c' then
+    let input = ((System.Console.ReadLine ()).ToLower())
+    if input.Length > 0 then
+        if input.[0] = 'c' then
             printfn "Code Breaker: Computer"
             Computer
         else
@@ -208,20 +225,20 @@ System.Console.Clear();;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-let mutable life = 8
-let mutable masterboard = []
+let mutable life = 10
+let mutable masterBoard = []
 
 let guesser =
-    if whoCodeBreaker = Human then
+    if codeBreaker = Human then
         while life > 0 do
             System.Console.Clear()
             printfn "Life: %A" life
-            printfn "%s" (printBoard masterboard)
+            printfn "%s" (printBoard masterBoard)
             let mutable guesscode = humanGuess()
-            let mutable valiguess = (validate Secretcode guesscode)
-            masterboard <- masterboard @ [(guesscode), (valiguess)] 
+            let mutable valiguess = (validate secretCode guesscode)
+            masterBoard <- masterBoard @ [(guesscode), (valiguess)] 
             life <- life - 1
-            if (validate Secretcode guesscode) = (4,0) then
+            if (validate secretCode guesscode) = (4,0) then
                 life <- life - 30
             else
                 ()
@@ -230,36 +247,20 @@ let guesser =
         while life >= 0 do
             System.Console.Clear()
             printfn "Turns: %A" life
-            printfn "%s" (printBoard masterboard)
+            printfn "%s" (printBoard masterBoard)
             let mutable guesscode1 = makeCode(Computer)
-            let mutable valiguess = (validate Secretcode guesscode1)
-            masterboard <- masterboard @ [(guesscode1), (valiguess)] 
+            let mutable valiguess = (validate secretCode guesscode1)
+            masterBoard <- masterBoard @ [(guesscode1), (valiguess)] 
             life <- life + 1
-            if (validate Secretcode guesscode1) = (4,0) then
+            if (validate secretCode guesscode1) = (4,0) then
                 life <- life - 999999
             else
                 ()
     if life < -1 then
-        printfn "The secret code was: %A" Secretcode 
+        printfn "The secret code was: %A" secretCode 
         printfn "Game over! You won!"
     else
-        printfn "The secret code was: %A" Secretcode
+        printfn "The secret code was: %A" secretCode
         printfn "Game over! You Lost!"
 
 
-(*
-
-// En secret code til test.
-let sCode = Secretcode
-// En guess code til test.
-let gCode = guesser
-
-printfn "%A" (validate sCode gCode)
-
-*)
-    
-
-
-//let gameboard (aBoard: board) = 
-
-//let testBoard : board = [([Red;Red;Green;Green],(1,1);([Yellow;Yellow;Purple;Purple],(1,1));([White;Black;Purple;Purple],(0,0));]
