@@ -32,8 +32,12 @@ let enterCode() =
         | h::t when h.[0] = 'p' -> Purple::(formatCode t)
         | h::t when h.[0] = 'w' -> White::(formatCode t)
         | h::t when h.[0] = 'b' -> Black::(formatCode t)
-        | h::t -> printfn "Your pick must match the colours listed above.\nWhat did you mean by \"%s\"?" h;
-                  formatCode (System.Console.ReadLine().ToLower()::t)
+        | h::t -> printfn "Your color must match one of the options above. \nWhat did you mean by \"%s\"?" h; colFixer t
+    and colFixer (t:string list) =
+        match System.Console.ReadLine().ToLower()::t with
+        | h::t when h.Length > 0 -> formatCode (h::t)
+        | h::t when h.Length < 1 -> colFixer t
+        | _ -> [Black]
     inputCode()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
