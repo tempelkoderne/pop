@@ -110,12 +110,46 @@ let printBoard (aBoard : board) =
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+let generatePermutations () =
+    let cols = [Red; Green; Yellow; Purple; Black; White]
+    let mutable perms : code list = []
+    for i in cols do
+        for j in cols do
+            for k in cols do
+                for l in cols do
+                    perms <- [i;j;k;l]::perms
+    Set.ofList perms
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+let mutable codePermutations : code Set = Set.ofList [[Red;Red;Red;Red];[Red;Red;Red;Green];[Red;Red;Green;Green];[Red;Red;Green;Yellow];[Red;Green;Green;Green];[Green;Green;Green;Green];[Black;Black;Black;Green];[Red;Black;Black;Black];[Yellow;Purple;Green;Black]]
+
+// codePermutations indeholder en række codes til test.
+let botGuess (currentBoard : board) =
+    // Remove permutations via sidste guess og answer, hvis currentBoard.Length >=1, dvs. der er gættet før.
+    if currentBoard.Length >= 1 then
+        let prevGuess = (fst currentBoard.[(currentBoard.Length - 1)])  // prevGuess giver det seneste guess i masterboard.
+        let prevAns = (snd currentBoard.[(currentBoard.Length - 1)])    // prevAns giver det seneste validate til det seneste guess i masterboard.
+        let remainingPerms = Set.filter (fun permsElement -> (validate prevGuess permsElement) = prevAns) codePermutations      // Filtrerer de elementer fra, som ikke giver prevAnswer, når de validates ift. prevGuess (som secret code).
+        codePermutations <- remainingPerms
+        // Finder det mindste element blandt de tilbageværende permutationer.
+        if (Set.count remainingPerms) >= 1 then
+            Set.minElement remainingPerms
+        else
+            printfn "No permutations left."
+            [Red;Red;Red;Red]
+    // Standardgæt, hvis currentBoard.Length < 1, dvs. der ikke er gættet før.
+    else
+        [Red;Red;Green;Green]
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 let guess (playerType : player) (currentBoard : board) =
     if currentBoard.Length < 20 then
         if playerType = Human then
             enterCode ()
         else
-            generateCode ()
+            botGuess (currentBoard)
     else
         [Black;Black;Black;Black]
 
@@ -211,6 +245,9 @@ let gameFlow () =
             let mutable life = 8 // Sætter livet. Bør måske ændres, så vi udnytter, at guess tager masterBoard som argument.  
             let mutable masterBoard = [] //Sætter masterBoardet op
             
+            // Reset permutations.
+            codePermutations <- (generatePermutations ())
+
             // snip til fordel for brug af guess - til gengæld kan computeren ikke køre uendeligt nu, til den gætter rigtigt.
             while life > 0 do
                 System.Console.Clear()
