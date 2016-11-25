@@ -10,7 +10,6 @@
 /// Various types used throughout the program.
 ///</summary>
 
-
 type codeColor = Red | Green | Yellow | Purple | White | Black
 type code = codeColor list
 type answer = int * int
@@ -18,36 +17,18 @@ type board = (code * answer) list
 type player = Human | Computer
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-(* enterCode *)
-///<summary>
-/// Prompts the user to enter several characters when called. The input is matched with the allowed codeColor types and appended to a list.
-///</summary>
-///<returns>
-/// A code (codeColor list) containing four elements.
-///</returns>
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-(* generateCode *)
-///<summary>
-/// Generates a random code when called.
-///</summary>
-///<returns>
-/// A code containing four elements.
-///</returns>
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 (* makeCode *)
 ///<summary>
-/// Calls the appropriate function for creating or generating a code, depending on the player type.
+/// Depending on the player type supplied to the function:
+/// - Human: Prompts the user to enter several characters. The input is then
+///   matched with the allowed codeColor types and appended to a list.
+/// - Computer: Generates a random code.
 ///</summary>
 ///<params name="user">
 /// A player type.
 ///</params>
 ///<returns>
-/// Unit.
+/// A code (codeColor list) containing four elements.
 ///</returns>
 
 let makeCode (user : player) =
@@ -141,7 +122,6 @@ let validate (guess : code) (code : code) =
     // Return guess with blacks & whites.
     (((blacks guess code), (whites guess code)))
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 (* printBoard *)
 ///<summary>
@@ -163,8 +143,6 @@ let printBoard (board : board) =
         stringBoard <- stringBoard + (sprintf "%-6s" (sprintf "%A" (snd (board.[i])))) +  "\n" // Løber gennem det andet element, et answer, i hver tuple i board og skriver det til stringBoard
     stringBoard
 
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // codePermutations is overwritten with the return value of generatePermutations and 
 // used by botGuess to narrow down the possible permutations of the secret code.
@@ -175,7 +153,7 @@ let mutable codePermutations : code Set = Set.ofList []
 ///<summary>
 /// Removes the elements from the global mutable codePermutations that do not
 /// return an answer equal to the previous answer (E.G. (1,1), when validated
-/// with the previous guess.
+/// against the previous guess.
 ///</summary>
 ///<params name="currentBoard">
 /// A board / (code * answer) list.
@@ -202,19 +180,30 @@ let botGuess (currentBoard : board) =
         [Red;Red;Green;Green]
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-let guess (playerType : player) (currentBoard : board) =
-    if currentBoard.Length < 20 then
-        if playerType = Human then
-            enterCode ()
+(* guess *)
+///<summary>
+/// Calls the appropriate function with appropriate arguments, depending on the supplied playertype.
+///</summary>
+///<params name="player">
+/// A player.
+///</params>
+///<params name="board">
+/// A board / (code * answer) list.
+///</params>
+///<returns>
+/// A code.
+///</returns>
+let guess (player : player) (board : board) =
+    if board.Length < 20 then
+        if player = Human then
+            makeCode (player)
         else
-            botGuess (currentBoard)
+            botGuess (board)
     else
         [Black;Black;Black;Black]
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Intro og tutorial.
+(*Introduction art and tutorial*)
 
 printfn "__          __  __                            _          __  __           _              __  __ _           _ 
  \ \        / / | |                          | |        |  \/  |         | |            |  \/  (_)         | |
@@ -226,6 +215,7 @@ printfn "__          __  __                            _          __  __        
                                                                                                               "
 
 printf "%70s" "Press any key to continue."
+// Prevents the program from continuing until the user interacts with the console through their keyboard.
 System.Console.ReadKey() |> ignore
 System.Console.Clear();;
 
@@ -236,6 +226,10 @@ printfn ""
 printfn "Enter [M]astermind."
 printfn "(You can either type 'mastermind' or 'm' and press [Enter] to confirm)."
 
+(* tutorial *)
+///<summary>
+/// A tutorial on how to interact with the program.
+///</summary>
 let rec tutorial () =
     let input = ((System.Console.ReadLine ()).ToLower())
     if input.Length > 0 then
@@ -250,19 +244,21 @@ let rec tutorial () =
 
 tutorial ()
 
-(*Vi er gået væk fra indeksering da det kan crashe programmet hvis man bare trykker enter. *)
-(* Vi er gået tilbage til indeksering fordi det er coolt, og fordi vi har fixet det med for loops. *)
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// gameFlow. Initialiserer spillet, sætter variable og kontrollerer flow.
+(* gameFlow *)
+///<summary>
+/// Initializes and controls the flow of the game by setting dependencies
+/// and variables (E.G. codeMaker, codeBreaker, codePermutations, etc.).
+/// See comments for details.
+///</summary>
 
 let gameFlow () =
+    // The playmore value ensures that the game can end and/or restart.
     let mutable playmore = 1
     while playmore = 1 do
             System.Console.Clear()
             
-            // Sætter hvem der laver koden afhængigt af input.
+            // Sets the player type of the code maker. The variable is used by various functions.
             let codeMaker =
                 printf "Choose a codemaker ([C]omputer / [H]uman):\n" 
                 let valg = ((System.Console.ReadLine ()).ToLower())
@@ -277,13 +273,10 @@ let gameFlow () =
                 else
                         printfn "Codemaker: Human"
                         Human
-            
-            // Sætter den hemmelige kode afhængigt af hvem der er codeMaker. TOS: Ville foretrække at have denne efter codemaker og codeBreaker.
-            let secretCode = (makeCode codeMaker)
 
-            // Sætter hvem der gætter koden afhængigt af input.
+            // Sets the player type of the code breaker. The variable is used by various functions.
             let codeBreaker =
-                printf "Choose a codebreaker ([C]omputer / [H]uman):\n"  //Vælger hvem kodeløseren skal være
+                printf "Choose a codebreaker ([C]omputer / [H]uman):\n"
                 let valg = ((System.Console.ReadLine ()).ToLower())
                 if valg.Length > 0 then
                     if valg.[0] = 'c' then
@@ -296,13 +289,20 @@ let gameFlow () =
                         printfn "Codebreaker: Human"
                         Human
             
-            // Initialiserer gætte-fasen.
+            // Sets the secret code via makeCode and the type of the codeMaker.
+            let secretCode = (makeCode codeMaker)
             System.Console.Clear()
+
+            // Prevents the program from continuing until the user interacts with the console through their keyboard.
             printfn "Press any key to start the game!"
             System.Console.ReadKey() |> ignore
             System.Console.Clear()
-            let mutable life = 8 // Sætter livet. Bør måske ændres, så vi udnytter, at guess tager masterBoard som argument.  
-            let mutable masterBoard = [] //Sætter masterBoardet op
+
+            // Sets the amount of life, thus settling the ancient dispute over the meaning and value of life.
+            let mutable life = 12
+            
+            // Sets up an empty board.
+            let mutable masterBoard = []
             
             (* generatePermutations *)
             ///<summary>
@@ -322,19 +322,20 @@ let gameFlow () =
                                 perms <- [i;j;k;l]::perms
                 Set.ofList perms
 
-            // Reset permutations.
+            // Assigns codePermutations a set of all possible code permutations.
             codePermutations <- (generatePermutations ())
 
-            // snip til fordel for brug af guess - til gengæld kan computeren ikke køre uendeligt nu, til den gætter rigtigt.
+            // While the codebreaker still has turns left, the board will be printed and the codebreaker prompted to make a guess.
             while life > 0 do
                 System.Console.Clear()
                 printfn "Life: %A\n" life
                 printfn "%s" (printBoard masterBoard)
-                let mutable guessCode = (guess codeBreaker masterBoard) // Bemærk: vi udnytter ikke, at guess tager masterBoard! Kan måske omdannes til at styre hvornår spillet slutter?
+                let mutable guessCode = (guess codeBreaker masterBoard)
                 let mutable validateGuess = (validate secretCode guessCode)
                 masterBoard <- masterBoard @ [(guessCode), (validateGuess)] 
                 life <- life - 1
-                if (validate secretCode guessCode) = (4,0) then //Hvis løsningen gættes. 
+                // If the correct code is guessed, ends the game by subtracting 30 from life, thereby ending the while-loop above.
+                if (validate secretCode guessCode) = (4,0) then 
                     life <- life - 30
                 else
                     ()
@@ -345,7 +346,7 @@ let gameFlow () =
                 printfn "The secret code was: %A" secretCode
                 printfn "Game over! %A won!" codeMaker
             
-            // Genstart funktion.
+            // Prompts the player to restart or end the game by setting the playmore value.
             printfn "Do you want to play again? ([Y]es / [N]o)"
             let restart = ((System.Console.ReadLine ()).ToLower())
             if restart.Length > 0 then                
