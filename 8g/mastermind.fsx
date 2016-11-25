@@ -165,54 +165,41 @@ let printBoard (board : board) =
         stringBoard <- stringBoard + (sprintf "%-6s" (sprintf "%A" (snd (board.[i])))) +  "\n" // Løber gennem det andet element, et answer, i hver tuple i board og skriver det til stringBoard
     stringBoard
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-(* generatePermutations *)
-///<summary>
-/// Generates a set containing all permutations of a code of four codeColors. Repetitions allowed.
-///</summary>
-///<returns>
-/// A set of codes.
-///</returns>
 
-let generatePermutations () =
-    let cols = [Red; Green; Yellow; Purple; Black; White]
-    let mutable perms : code list = []
-    for i in cols do
-        for j in cols do
-            for k in cols do
-                for l in cols do
-                    perms <- [i;j;k;l]::perms
-    Set.ofList perms
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// codePermutations is overwritten with the return value of generatePermutations.
+// codePermutations is overwritten with the return value of generatePermutations and 
+// used by botGuess to narrow down the possible permutations of the secret code.
+
 let mutable codePermutations : code Set = Set.ofList []
 
 (* botGuess *)
 ///<summary>
-/// 
+/// Removes the elements from the global mutable codePermutations that do not
+/// return an answer equal to the previous answer (E.G. (1,1), when validated
+/// with the previous guess.
 ///</summary>
 ///<params name="currentBoard">
 /// A board / (code * answer) list.
 ///</params>
 ///<returns>
-/// A set of codes.
+/// A code.
 ///</returns>
 
 let botGuess (currentBoard : board) =
-    // Remove permutations via sidste guess og answer, hvis currentBoard.Length >=1, dvs. der er gættet før.
+    // Remove permutations via the previous guess and answer, if currentBoard.Length >=1 (one guess has been made).
     if currentBoard.Length >= 1 then
-        let prevGuess = (fst currentBoard.[(currentBoard.Length - 1)])  // prevGuess giver det seneste guess i masterboard.
-        let prevAns = (snd currentBoard.[(currentBoard.Length - 1)])    // prevAns giver det seneste validate til det seneste guess i masterboard.
-        let remainingPerms = Set.filter (fun permsElement -> (validate prevGuess permsElement) = prevAns) codePermutations      // Filtrerer de elementer fra, som ikke giver prevAnswer, når de validates ift. prevGuess (som secret code).
+        let prevGuess = (fst currentBoard.[(currentBoard.Length - 1)])  // Equals the previous guess in masterboard.
+        let prevAns = (snd currentBoard.[(currentBoard.Length - 1)])    // Equals the previous answer in masterboard.
+        let remainingPerms = Set.filter (fun permsElement -> (validate prevGuess permsElement) = prevAns) codePermutations      // Filters the elements that returns an answer equal to prevAnswer, when validated with prevGuess (as code).
         codePermutations <- remainingPerms
-        // Finder det mindste element blandt de tilbageværende permutationer.
+        // Finds the smallest element among the remaining permutations.
         if (Set.count remainingPerms) >= 1 then
             Set.minElement remainingPerms
         else
             printfn "No permutations left."
             [Red;Red;Red;Red]
-    // Standardgæt, hvis currentBoard.Length < 1, dvs. der ikke er gættet før.
+    // The standard guess, if currentBoard.Length < 1, (no guesses have been made).
     else
         [Red;Red;Green;Green]
 
@@ -319,6 +306,24 @@ let gameFlow () =
             let mutable life = 8 // Sætter livet. Bør måske ændres, så vi udnytter, at guess tager masterBoard som argument.  
             let mutable masterBoard = [] //Sætter masterBoardet op
             
+            (* generatePermutations *)
+            ///<summary>
+            /// Generates a set containing all permutations of a code of four codeColors. Repetitions allowed.
+            ///</summary>
+            ///<returns>
+            /// A set of codes.
+            ///</returns>
+
+            let generatePermutations () =
+                let cols = [Red; Green; Yellow; Purple; Black; White]
+                let mutable perms : code list = []
+                for i in cols do
+                    for j in cols do
+                        for k in cols do
+                            for l in cols do
+                                perms <- [i;j;k;l]::perms
+                Set.ofList perms
+
             // Reset permutations.
             codePermutations <- (generatePermutations ())
 
