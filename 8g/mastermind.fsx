@@ -1,6 +1,16 @@
+(* Aflevering 8g - Mastermind *)
+// Tempelkoderne
+//      Anders Geil
+//      Peter Lim
+//      Tobias Stannius
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Typer.
+(* Types *)
+///<summary>
+/// Various types used throughout the program.
+///</summary>
+
+
 
 type codeColor = Red | Green | Yellow | Purple | White | Black
 type code = codeColor list
@@ -8,17 +18,23 @@ type answer = int * int
 type board = (code * answer) list
 type player = Human | Computer
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// enterCode
-let enterCode() =
-    let rec inputCode() =
+(* enterCode *)
+///<summary>
+/// Prompts the user to enter several characters when called. The input is matched with the allowed codeColor types and appended to a list.
+///</summary>
+///<returns>
+/// A code (codeColor list) containing four elements.
+///</returns>
+
+let enterCode () =
+    let rec inputCode () =
         printfn "Pick your colors!"
         printfn "([R]ed; [G]reen; [Y]ellow; [P]urple; [W]hite; [B]lack)"
         let input = System.Console.ReadLine().ToLower()
         let sep = [|" "; "; "; ", "; ";"; ","; "-"|]
         let splinput = input.Split (sep, System.StringSplitOptions.None)
-        if splinput.Length <> 4 then
+        if splinput.Length <> 4 || (Array.exists ((=) "") splinput) then
             printfn "You need to type 4 colors!"
             inputCode ()
         else
@@ -38,10 +54,16 @@ let enterCode() =
         | h::t when h.Length > 0 -> formatCode (h::t)
         | h::t when h.Length < 1 -> colFixer t
         | _ -> [Black]
-    inputCode()
+    inputCode ()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+(* generateCode *)
+///<summary>
+/// Generates a random code when called.
+///</summary>
+///<returns>
+/// A code containing four elements.
+///</returns>
 let generateCode () =
     let colors = [Red; Green; Yellow; Purple; White; Black]
     let rand = System.Random()
@@ -52,7 +74,19 @@ let generateCode () =
     code
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+(* makeCode *)
+///<summary>
+/// Calls the appropriate code function for creating or generating a code.
+///</summary>
+///<params name="arr'">
+/// An array of any type.
+///</params>
+///<params name="i">
+/// The index. An integer.
+///</params>
+///<returns>
+/// They value at index i or null.
+///</returns>
 let makeCode (user : player) =
     if user = Human then
         enterCode ()
