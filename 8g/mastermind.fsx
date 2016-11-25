@@ -305,41 +305,16 @@ let gameFlow () =
             // Genstart funktion.
             printfn "Do you want to play again? ([Y]es / [N]o)"
             let restart = ((System.Console.ReadLine ()).ToLower())
-            if restart.[0] = 'y' then
-                System.Console.Clear()
-                playmore <- 1
+            if restart.Length > 0 then                
+                if restart.[0] = 'y' then
+                    System.Console.Clear()
+                    playmore <- 1
+                else
+                    System.Console.Clear()
+                    printfn "Goodbye."
+                    playmore <- 0
             else
                 System.Console.Clear()
                 printfn "Goodbye."
-                playmore <- 0
 
 gameFlow ()
-
-// paste
-//         if codeBreaker = Human then
-//             while life > 0 do
-//                 System.Console.Clear()
-//                 printfn "Life: %A\n" life
-//                 printfn "%s" (printBoard masterBoard)
-//                 let mutable guessCode = enterCode()
-//                 let mutable validateGuess = (validate secretCode guessCode)
-//                 masterBoard <- masterBoard @ [(guessCode), (validateGuess)] 
-//                 life <- life - 1
-//                 if (validate secretCode guessCode) = (4,0) then //Hvis løsningen gættes. 
-//                     life <- life - 30
-//                 else
-//                     ()
-//         else 
-//             life <- 0
-//             while life >= 0 do
-//                 System.Console.Clear()
-//                 printfn "Turns: %A" life
-//                 printfn "%s" (printBoard masterBoard)
-//                 let mutable guessCode1 = makeCode(Computer)
-//                 let mutable validateGuess = (validate secretCode guessCode1)
-//                 masterBoard <- masterBoard @ [(guessCode1), (validateGuess)] 
-//                 life <- life + 1
-//                 if (validate secretCode guessCode1) = (4,0) then
-//                     life <- life - 999999
-//                 else
-//                     ()
