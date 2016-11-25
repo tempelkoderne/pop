@@ -264,10 +264,10 @@ let gameFlow () =
                     ()
             if life < -1 then
                 printfn "The secret code was: %A" secretCode 
-                printfn "Game over! You won!"
+                printfn "Game over! %A won!" codeBreaker
             else
                 printfn "The secret code was: %A" secretCode
-                printfn "Game over! You lost!"
+                printfn "Game over! %A won!" codeMaker
             
             // Genstart funktion.
             printfn "Do you want to play again? ([Y]es / [N]o)"
