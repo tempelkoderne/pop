@@ -10,8 +10,6 @@
 /// Various types used throughout the program.
 ///</summary>
 
-
-
 type codeColor = Red | Green | Yellow | Purple | White | Black
 type code = codeColor list
 type answer = int * int
@@ -64,6 +62,7 @@ let enterCode () =
 ///<returns>
 /// A code containing four elements.
 ///</returns>
+
 let generateCode () =
     let colors = [Red; Green; Yellow; Purple; White; Black]
     let rand = System.Random()
@@ -76,17 +75,15 @@ let generateCode () =
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 (* makeCode *)
 ///<summary>
-/// Calls the appropriate code function for creating or generating a code.
+/// Calls the appropriate function for creating or generating a code, depending on the player type.
 ///</summary>
-///<params name="arr'">
-/// An array of any type.
-///</params>
-///<params name="i">
-/// The index. An integer.
+///<params name="user">
+/// A player type.
 ///</params>
 ///<returns>
-/// They value at index i or null.
+/// Unit.
 ///</returns>
+
 let makeCode (user : player) =
     if user = Human then
         enterCode ()
@@ -94,6 +91,21 @@ let makeCode (user : player) =
         generateCode ()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+(* validate *)
+///<summary>
+/// Validates the guess of the player against the secret code.
+/// Increments the number of blacks if the same codeColor is at the same index in both guess and code.
+/// Increments the number of whites if the same codeColor exists in guess and code, but at different indexes.
+///</summary>
+///<params name="guess'">
+/// A code of four elements.
+///</params>
+///<params name="code'">
+/// A code of four elements.
+///</params>
+///<returns>
+/// A tuple of integers. Blacks first, whites second.
+///</returns>
 
 let validate (guess : code) (code : code) =
     // count blacks
