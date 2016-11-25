@@ -95,20 +95,21 @@ let makeCode (user : player) =
 ///<summary>
 /// Validates the guess of the player against the secret code.
 /// Increments the number of blacks if the same codeColor is at the same index in both guess and code.
-/// Increments the number of whites if the same codeColor exists in guess and code, but at different indexes.
+/// Increments the number of whites if the same codeColor exists in guess and code.
+/// Subtracts the number of blacks from whites.
 ///</summary>
-///<params name="guess'">
+///<params name="guess">
 /// A code of four elements.
 ///</params>
-///<params name="code'">
+///<params name="code">
 /// A code of four elements.
 ///</params>
 ///<returns>
-/// A tuple of integers. Blacks first, whites second.
+/// An answer (int * int) - a tuple of integers. Blacks first, whites second.
 ///</returns>
 
 let validate (guess : code) (code : code) =
-    // count blacks
+    // Count blacks.
     let blacks (guess : code) (code : code) =
         let rec hits l1 l2 =
             match (l1, l2) with
@@ -119,7 +120,7 @@ let validate (guess : code) (code : code) =
         let blacks = hits guess code
         blacks
 
-    // count whites
+    // Count whites.
     let whites (guess : code) (code : code) =
         let rec notBlacks l1 l2 =
             match (l1, l2) with
@@ -139,22 +140,39 @@ let validate (guess : code) (code : code) =
             | _ -> 666
         intersect sortedNotBlacks
 
-    // return guess with blacks & whites
+    // Return guess with blacks & whites.
     (((blacks guess code), (whites guess code)))
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Omdanner et board til en string, som kan printes.
-let printBoard (aBoard : board) =
+(* printBoard *)
+///<summary>
+/// Takes a board and creates an equivalent string with column titles.
+///</summary>
+///<params name="board">
+/// A board / (code * answer) list.
+///</params>
+///<returns>
+/// A string.
+///</returns>
+
+let printBoard (board : board) =
     let mutable stringBoard = (sprintf "%-6s%-10s%-10s%-10s%-10s %-5s\n----------------------------------------------------\n" "Turn" "Col1" "Col2" "Col3" "Col4" "B, W")
-    for i = 0 to aBoard.Length - 1 do   // Løber igennem hvert element, altså tuple, (code * answer) i et board.
+    for i = 0 to board.Length - 1 do   // Løber igennem hvert element, altså tuple, (code * answer) i et board.
         stringBoard <- stringBoard + (sprintf "%-6d" (i+1))
         for j = 0 to 3 do               // Løber gennem det første element, en code, i hver tuple i board og skriver hvert element i code til stringBoard.
-            stringBoard <- stringBoard + (sprintf "%-10s" (sprintf "%A" (fst (aBoard.[i])).[j]))
-        stringBoard <- stringBoard + (sprintf "%-6s" (sprintf "%A" (snd (aBoard.[i])))) +  "\n" // Løber gennem det andet element, et answer, i hver tuple i board og skriver det til stringBoard
+            stringBoard <- stringBoard + (sprintf "%-10s" (sprintf "%A" (fst (board.[i])).[j]))
+        stringBoard <- stringBoard + (sprintf "%-6s" (sprintf "%A" (snd (board.[i])))) +  "\n" // Løber gennem det andet element, et answer, i hver tuple i board og skriver det til stringBoard
     stringBoard
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+(* generatePermutations *)
+///<summary>
+/// Generates a set containing all permutations of a code of four codeColors. Repetitions allowed.
+///</summary>
+///<returns>
+/// A set of codes.
+///</returns>
 
 let generatePermutations () =
     let cols = [Red; Green; Yellow; Purple; Black; White]
@@ -167,10 +185,20 @@ let generatePermutations () =
     Set.ofList perms
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// codePermutations is overwritten with the return value of generatePermutations.
+let mutable codePermutations : code Set = Set.ofList []
 
-let mutable codePermutations : code Set = Set.ofList [[Red;Red;Red;Red];[Red;Red;Red;Green];[Red;Red;Green;Green];[Red;Red;Green;Yellow];[Red;Green;Green;Green];[Green;Green;Green;Green];[Black;Black;Black;Green];[Red;Black;Black;Black];[Yellow;Purple;Green;Black]]
+(* botGuess *)
+///<summary>
+/// 
+///</summary>
+///<params name="currentBoard">
+/// A board / (code * answer) list.
+///</params>
+///<returns>
+/// A set of codes.
+///</returns>
 
-// codePermutations indeholder en række codes til test.
 let botGuess (currentBoard : board) =
     // Remove permutations via sidste guess og answer, hvis currentBoard.Length >=1, dvs. der er gættet før.
     if currentBoard.Length >= 1 then
