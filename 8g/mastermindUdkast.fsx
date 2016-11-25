@@ -272,9 +272,14 @@ let gameFlow () =
             // Genstart funktion.
             printfn "Do you want to play again? ([Y]es / [N]o)"
             let restart = ((System.Console.ReadLine ()).ToLower())
-            if restart.[0] = 'y' then
-                System.Console.Clear()
-                playmore <- 1
+            if restart.Length > 0 then                
+                if restart.[0] = 'y' then
+                    System.Console.Clear()
+                    playmore <- 1
+                else
+                    System.Console.Clear()
+                    printfn "Goodbye."
+                    playmore <- 0
             else
                 System.Console.Clear()
                 printfn "Goodbye."
