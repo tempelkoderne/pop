@@ -1,4 +1,5 @@
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Typer.
 
@@ -18,7 +19,7 @@ let enterCode() =
         let input = System.Console.ReadLine().ToLower()
         let sep = [|" "; "; "; ", "; ";"; ","; "-"|]
         let splinput = input.Split (sep, System.StringSplitOptions.None)
-        if splinput.Length <> 4 then
+        if splinput.Length <> 4 || (Array.exists ((=) "") splinput) then
             printfn "You need to type 4 colors!"
             inputCode ()
         else
