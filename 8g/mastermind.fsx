@@ -251,18 +251,18 @@ let gameFlow () =
             
             // Sætter hvem der laver koden afhængigt af input.
             let codeMaker =
-                printf "Choose a code maker ([C]omputer / [H]uman):\n" 
+                printf "Choose a codemaker ([C]omputer / [H]uman):\n" 
                 let valg = ((System.Console.ReadLine ()).ToLower())
                 if valg.Length > 0 then
                     if valg.[0] = 'c' then
-                        printfn "Code Maker: Computer"
+                        printfn "Codemaker: Computer"
                         printfn "Code generated!\n"
                         Computer
                     else
-                        printfn "Code Maker: Human"
+                        printfn "Codemaker: Human"
                         Human
                 else
-                        printfn "Code Maker: Human"
+                        printfn "Codemaker: Human"
                         Human
             
             // Sætter den hemmelige kode afhængigt af hvem der er codeMaker. TOS: Ville foretrække at have denne efter codemaker og codeBreaker.
@@ -270,17 +270,17 @@ let gameFlow () =
 
             // Sætter hvem der gætter koden afhængigt af input.
             let codeBreaker =
-                printf "Choose a code breaker ([C]omputer / [H]uman):\n"  //Vælger hvem kodeløseren skal være
+                printf "Choose a codebreaker ([C]omputer / [H]uman):\n"  //Vælger hvem kodeløseren skal være
                 let valg = ((System.Console.ReadLine ()).ToLower())
                 if valg.Length > 0 then
                     if valg.[0] = 'c' then
-                        printfn "Code Breaker: Computer"
+                        printfn "Codebreaker: Computer"
                         Computer
                     else
-                        printfn "Code Breaker: Human"
+                        printfn "Codebreaker: Human"
                         Human
                 else
-                        printfn "Code Breaker: Human"
+                        printfn "Codebreaker: Human"
                         Human
             
             // Initialiserer gætte-fasen.
@@ -309,10 +309,10 @@ let gameFlow () =
                     ()
             if life < -1 then
                 printfn "The secret code was: %A" secretCode 
-                printfn "Game over! You won!"
+                printfn "Game over! %A won!" codeBreaker
             else
                 printfn "The secret code was: %A" secretCode
-                printfn "Game over! You lost!"
+                printfn "Game over! %A won!" codeMaker
             
             // Genstart funktion.
             printfn "Do you want to play again? ([Y]es / [N]o)"
