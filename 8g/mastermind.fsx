@@ -264,14 +264,13 @@ let gameFlow () =
                 let valg = ((System.Console.ReadLine ()).ToLower())
                 if valg.Length > 0 then
                     if valg.[0] = 'c' then
-                        printfn "Codemaker: Computer"
-                        printfn "Code generated!\n"
+                        printfn "Codemaker: Computer\n"
                         Computer
                     else
-                        printfn "Codemaker: Human"
+                        printfn "Codemaker: Human\n"
                         Human
                 else
-                        printfn "Codemaker: Human"
+                        printfn "Codemaker: Human\n"
                         Human
 
             // Sets the player type of the code breaker. The variable is used by various functions.
@@ -280,16 +279,17 @@ let gameFlow () =
                 let valg = ((System.Console.ReadLine ()).ToLower())
                 if valg.Length > 0 then
                     if valg.[0] = 'c' then
-                        printfn "Codebreaker: Computer"
+                        printfn "Codebreaker: Computer\n"
                         Computer
                     else
-                        printfn "Codebreaker: Human"
+                        printfn "Codebreaker: Human\n"
                         Human
                 else
-                        printfn "Codebreaker: Human"
+                        printfn "Codebreaker: Human\n"
                         Human
             
             // Sets the secret code via makeCode and the type of the codeMaker.
+            printfn "Codemaker:"
             let secretCode = (makeCode codeMaker)
             System.Console.Clear()
 
