@@ -171,7 +171,7 @@ let generatePermutations () =
                     perms <- [i;j;k;l]::perms
     Set.ofList perms
 
-let mutable validGuess = generatePermutations ()
+let mutable validGuess : code Set = Set.empty
 
 let botGuess (currentBoard : board) =
     // Infer & exclude impossible guesses via the previous guess and answer.
@@ -235,9 +235,6 @@ let rec tutorial () =
         tutorial ()
 
 
-
-
-
 let rec play () =
     System.Console.Clear()
 
@@ -299,5 +296,6 @@ and replay () =
 let mastermind () =
     startGame()
     tutorial()
+    validGuess <- generatePermutations ()
     play()
     // credits()?
