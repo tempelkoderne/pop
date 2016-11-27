@@ -258,7 +258,7 @@ let gameFlow () =
     while playmore = 1 do
             System.Console.Clear()
             
-            // Sets the player type of the code maker. The variable is used by various functions.
+            // Sets the player type of the codemaker. The variable is used by various functions.
             let codeMaker =
                 printf "Choose a codemaker ([C]omputer / [H]uman):\n" 
                 let valg = ((System.Console.ReadLine ()).ToLower())
@@ -273,7 +273,7 @@ let gameFlow () =
                         printfn "Codemaker: Human\n"
                         Human
 
-            // Sets the player type of the code breaker. The variable is used by various functions.
+            // Sets the player type of the codebreaker. The variable is used by various functions.
             let codeBreaker =
                 printf "Choose a codebreaker ([C]omputer / [H]uman):\n"
                 let valg = ((System.Console.ReadLine ()).ToLower())
