@@ -249,6 +249,8 @@ let rec play () =
     
     let mutable masterBoard = []
     let mutable attempts = 12
+    if codebreaker = Computer then
+        validGuess <- generatePermutations ()
 
     while attempts > 0 do
         System.Console.Clear()
@@ -296,6 +298,5 @@ and replay () =
 let mastermind () =
     startGame()
     tutorial()
-    validGuess <- generatePermutations ()
     play()
     // credits()?
