@@ -306,6 +306,7 @@ let rec play () =
     
     let mutable masterBoard = []
     let mutable attempts = 12
+    let mutable guesses = 0
     if codebreaker = Computer then
         validGuess <- generatePermutations ()
 
@@ -316,21 +317,23 @@ let rec play () =
         let mutable guessCode = (guess codebreaker masterBoard)
         let mutable validateGuess = (validate secretCode guessCode)
         masterBoard <- masterBoard @ [(guessCode), (validateGuess)]
+        guesses <- guesses + 1
         attempts <- attempts - 1
         
         if validateGuess = (4,0) then
             attempts <- attempts - 13
 
     let gameover (winner:player) =
+        System.Console.Clear()
         printfn "%s" (printBoard masterBoard)
         printfn "The secret code was: %A" secretCode
-        printfn "Game over! %A won!" winner
+        printfn "Game over! %A won %s %A guesses!" winner (if guesses=12 then "after" else "in") guesses
         replay()
         
-    if attempts > 0 then
-        gameover codemaker
-    else
+    if attempts < 0 then
         gameover codebreaker
+    else
+        gameover codemaker
     (* replay *)
     ///<summary>
     /// Prompts the user to play again and either sets up a new game or quits.
