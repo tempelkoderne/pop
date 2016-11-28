@@ -68,6 +68,9 @@ let makeCode (user : player) =
                     colors.[rand.Next(0,5)]]
         code
 
+printfn "makeCode"
+printfn "See report for tests."
+
 (* validate *)
 ///<summary>
 /// Validates the guess of the player against the secret code.
@@ -119,6 +122,12 @@ let validate (guess : code) (code : code) =
 
     (((blacks guess code), (whites guess code)))
 
+printfn "validate"
+printfn "Test1: validate [Red; Red; White; White] [Red; Red; White; White] = (4,0): %b" (validate [Red; Red; White; White] [Red; Red; White; White] = (4,0))
+printfn "Test2: validate [Red; Red; White; Black] [Red; Red; White; White] = (3,0): %b" (validate [Red; Red; White; Black] [Red; Red; White; White] = (3,0))
+printfn "Test3: validate [Red; Red; Black; White] [Red; Red; White; Black] = (2,2): %b" (validate [Red; Red; Black; White] [Red; Red; White; Black] = (2,2))
+printfn "Test4: validate [Red; Red; White; White] [Red; Red; White; White] = (0,4): %b" (validate [Red; Red; White; White] [White; White; Red; Red] = (0,4))
+
 (* printBoard *)
 ///<summary>
 /// Takes a board and creates an equivalent string with column titles.
@@ -138,6 +147,14 @@ let printBoard (board : board) =
             stringBoard <- stringBoard + (sprintf "%-10s" (sprintf "%A" (fst (board.[i])).[j]))
         stringBoard <- stringBoard + (sprintf "%-6s" (sprintf "%A" (snd (board.[i])))) +  "\n" // Løber gennem det andet element, et answer, i hver tuple i board og skriver det til stringBoard
     stringBoard
+
+printfn "printBoard"
+printfn "Test1: %b\n printBoard [([Black; Black; Black; Black], (2,0))] = \n\"Turn  Col1      Col2      Col3      Col4       B, W 
+----------------------------------------------------
+1     Black     Black     Black     Black     (2, 0)\"" (printBoard [([Black; Black; Black; Black], (2,0))] = "Turn  Col1      Col2      Col3      Col4       B, W 
+----------------------------------------------------
+1     Black     Black     Black     Black     (2, 0)
+")
 
 (* config *)
 ///<summary>
@@ -163,6 +180,9 @@ let config (role:string)  =
     else
         printfn "%s: Human\n" role
         Human
+
+printfn "config"
+printfn "See report for tests."
 
 (* botGuess *)
 ///<summary>
@@ -193,6 +213,11 @@ let botGuess (currentBoard : board) =
         // The standard guess, if no guesses have previously been made.
         [Red;Red;Green;Green]
 
+printfn "botGuess"
+validGuess <- generatePermutations ()
+printfn "Test1: botGuess [] = [Red; Red; Green; Green]: %b" (botGuess [] = [Red; Red; Green; Green])
+validGuess <- Set.empty
+
 (* guess *)
 ///<summary>
 /// Computes or prompts the player for a guess.
@@ -216,6 +241,11 @@ let guess (player : player) (board : board) =
     else
         botGuess (board)
 
+printfn "guess"
+validGuess <- generatePermutations ()
+printfn "Test1: guess Computer [] = [Red; Red; Green; Green]: %b" (guess Computer [] = [Red; Red; Green; Green])
+validGuess <- generatePermutations()
+
 (* startGame *)
 ///<summary>
 /// Launches the game.
@@ -237,6 +267,9 @@ let startGame () =
     // Prevents the program from continuing until the user interacts with the console through their keyboard.
     System.Console.ReadKey() |> ignore
     System.Console.Clear()
+
+printfn "startGame"
+printfn "See report for tests."
 
 (* tutorial *)
 ///<summary>
@@ -262,6 +295,9 @@ let rec tutorial () =
         printfn "You must type the character 'm' and press [Enter] to continue."
         tutorial ()
 
+printfn "startGame"
+printfn "See report for tests."
+
 (* generatePermutations *)
 ///<summary>
 /// Generates a set of all possible codes.
@@ -279,6 +315,9 @@ let generatePermutations () =
                 for l in cols do
                     perms <- [i;j;k;l]::perms
     Set.ofList perms
+
+printfn "generatePermutations"
+printfn "Test1: generatePermutations().Count = (pown 6 4): %b" (generatePermutations().Count = (pown 6 4))
 
 (* play *)
 ///<summary>
@@ -355,7 +394,9 @@ and replay () =
     else
         replay ()
 
-        
+printfn "play"
+printfn "See report for tests."
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 (* mastermind *)
 (* play *)
@@ -375,3 +416,6 @@ let mastermind () =
     play()
     // credits()?
 mastermind()
+
+printfn "mastermind"
+printfn "See report for tests."
