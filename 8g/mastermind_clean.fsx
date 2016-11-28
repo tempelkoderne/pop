@@ -276,7 +276,7 @@ printfn "See report for tests."
 /// A tutorial on how to interact with the game.
 ///</summary>
 ///<returns>
-/// Nothing.
+/// Unit.
 ///</returns>
 
 let rec tutorial () =
@@ -324,7 +324,7 @@ printfn "Test1: generatePermutations().Count = (pown 6 4): %b" (generatePermutat
 /// Runs an actual game of mastermind.
 ///</summary>
 ///<returns>
-/// Nothing.
+/// Unit.
 ///</returns>
 ///<remarks>
 /// Dependencies: config(), makeCode(), generatePermutations(),
@@ -373,16 +373,16 @@ let rec play () =
         gameover codebreaker
     else
         gameover codemaker
-    (* replay *)
-    ///<summary>
-    /// Prompts the user to play again and either sets up a new game or quits.
-    ///</summary>
-    ///<returns>
-    /// A new game or game credits.
-    ///</returns>
-    ///<remarks>
-    /// Dependencies: generatePermutations(), play().
-    ///</remarks>
+(* replay *)
+///<summary>
+/// Prompts the user to play again and either sets up a new game or quits.
+///</summary>
+///<returns>
+/// A new game or game credits.
+///</returns>
+///<remarks>
+/// Dependencies: generatePermutations(), play().
+///</remarks>
 and replay () =
     printfn "Do you want to play again? ([Y]es/[N]o)"
     let toggle = ((System.Console.ReadLine ()).ToLower())
@@ -399,7 +399,6 @@ printfn "See report for tests."
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 (* mastermind *)
-(* play *)
 ///<summary>
 /// Starts the game mastermind.
 ///</summary>
@@ -419,3 +418,10 @@ mastermind()
 
 printfn "mastermind"
 printfn "See report for tests."
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+(*TESTS*)
+
+// Tests flyttes herned ved lejlighed.
