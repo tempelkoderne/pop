@@ -264,16 +264,16 @@ let rec play () =
         if validateGuess = (4,0) then
             attempts <- attempts - 13
 
+    let gameover (winner:player) =
+        printfn "%s" (printBoard masterBoard)
+        printfn "The secret code was: %A" secretCode
+        printfn "Game over! %A won!" winner
+        replay()
+        
     if attempts > 0 then
-        printfn "%s" (printBoard masterBoard)
-        printfn "The secret code was: %A" secretCode
-        printfn "Game over! %A won!" codemaker
-        replay()
+        gameover codemaker
     else
-        printfn "%s" (printBoard masterBoard)
-        printfn "The secret code was: %A" secretCode
-        printfn "Game over! %A won!" codebreaker
-        replay()
+        gameover codebreaker
 
 and replay () =
     printfn "Do you want to play again? ([Y]es/[N]o)"
