@@ -16,7 +16,6 @@ type answer = int * int
 type board = (code * answer) list
 type player = Human | Computer
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 (* makeCode *)
 ///<summary>
 /// Depending on the player type supplied to the function:
@@ -69,7 +68,6 @@ let makeCode (user : player) =
                     colors.[rand.Next(0,5)]]
         code
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 (* validate *)
 ///<summary>
 /// Validates the guess of the player against the secret code.
@@ -119,10 +117,8 @@ let validate (guess : code) (code : code) =
             | _ -> 666
         intersect sortedNotBlacks
 
-    // Return guess with blacks & whites.
     (((blacks guess code), (whites guess code)))
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 (* printBoard *)
 ///<summary>
 /// Takes a board and creates an equivalent string with column titles.
@@ -143,9 +139,16 @@ let printBoard (board : board) =
         stringBoard <- stringBoard + (sprintf "%-6s" (sprintf "%A" (snd (board.[i])))) +  "\n" // Løber gennem det andet element, et answer, i hver tuple i board og skriver det til stringBoard
     stringBoard
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// codePermutations is overwritten with the return value of generatePermutations and 
-// used by botGuess to narrow down the possible permutations of the secret code.
+(* config *)
+///<summary>
+/// Sets the roles of the game (codebreaker/codemaker) by prompting the user.
+///</summary>
+///<params name="role">
+/// A string describing the role to be set. Either "codebreaker" or "codemaker".
+///</params>
+///<returns>
+/// A player type (Human/Computer).
+///</returns>
 
 let config (role:string)  =
     printfn "Choose a %s ([C]omputer/[H]uman):" role
@@ -161,15 +164,19 @@ let config (role:string)  =
         printfn "%s: Human\n" role
         Human
 
-let generatePermutations () =
-    let cols = [Red; Green; Yellow; Purple; Black; White]
-    let mutable (perms:code list) = []
-    for i in cols do
-        for j in cols do
-            for k in cols do
-                for l in cols do
-                    perms <- [i;j;k;l]::perms
-    Set.ofList perms
+(* botGuess *)
+///<summary>
+/// Infers the set of valid guesses based on previous experience and picks one.
+///</summary>
+///<params name="currentBoard">
+/// The current board of guesses and answers.
+///</params>
+///<returns>
+/// A valid guess of type code.
+///</returns>
+///<remarks>
+/// Draws on the global variable validGuess, containing the set of non-excluded guesses.
+///</remarks>
 
 let mutable validGuess : code Set = Set.empty
 
@@ -186,18 +193,36 @@ let botGuess (currentBoard : board) =
         // The standard guess, if no guesses have previously been made.
         [Red;Red;Green;Green]
 
+(* guess *)
+///<summary>
+/// Computes or prompts the player for a guess.
+///</summary>
+///<params name="player">
+/// The player who is to make a guess (Human or Computer).
+///</params>
+///<params name="board">
+/// The current board of previous guesses.
+///</params>
+///<returns>
+/// A valid guess of type code.
+///</returns>
+///<remarks>
+/// Dependencies: makeCode(), botGuess().
+///</remarks>
+
 let guess (player : player) (board : board) =
-    if board.Length < 20 then
-        if player = Human then
-            makeCode (player)
-        else
-            botGuess (board)
+    if player = Human then
+        makeCode (player)
     else
-        [Black;Black;Black;Black]
+        botGuess (board)
 
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-(*Introduction art and tutorial*)
+(* startGame *)
+///<summary>
+/// Launches the game.
+///</summary>
+///<returns>
+/// A bunch of shitty ascii-art.
+///</returns>
 
 let startGame () =
     printfn "__          __  __                            _          __  __           _              __  __ _           _ 
@@ -213,11 +238,14 @@ let startGame () =
     System.Console.ReadKey() |> ignore
     System.Console.Clear()
 
-
 (* tutorial *)
 ///<summary>
-/// A tutorial on how to interact with the program.
+/// A tutorial on how to interact with the game.
 ///</summary>
+///<returns>
+/// Nothing.
+///</returns>
+
 let rec tutorial () =
     printfn "Immerse yourself through the power of your keyboard! During this game you will be asked to enter one or several characrs. Your choice is confirmed by pressing Return. Let's try it out!\n"    
     printfn "Enter [M]astermind."
@@ -234,6 +262,35 @@ let rec tutorial () =
         printfn "You must type the character 'm' and press [Enter] to continue."
         tutorial ()
 
+(* generatePermutations *)
+///<summary>
+/// Generates a set of all possible codes.
+///</summary>
+///<returns>
+/// The full set of valid code guesses.
+///</returns>
+
+let generatePermutations () =
+    let cols = [Red; Green; Yellow; Purple; Black; White]
+    let mutable (perms:code list) = []
+    for i in cols do
+        for j in cols do
+            for k in cols do
+                for l in cols do
+                    perms <- [i;j;k;l]::perms
+    Set.ofList perms
+
+(* play *)
+///<summary>
+/// Runs an actual game of mastermind.
+///</summary>
+///<returns>
+/// Nothing.
+///</returns>
+///<remarks>
+/// Dependencies: config(), makeCode(), generatePermutations(),
+/// printBoard(), guess(), validate(), replay().
+///</remarks>
 
 let rec play () =
     System.Console.Clear()
@@ -274,7 +331,16 @@ let rec play () =
         gameover codemaker
     else
         gameover codebreaker
-
+    (* replay *)
+    ///<summary>
+    /// Prompts the user to play again and either sets up a new game or quits.
+    ///</summary>
+    ///<returns>
+    /// A new game or game credits.
+    ///</returns>
+    ///<remarks>
+    /// Dependencies: generatePermutations(), play().
+    ///</remarks>
 and replay () =
     printfn "Do you want to play again? ([Y]es/[N]o)"
     let toggle = ((System.Console.ReadLine ()).ToLower())
@@ -288,15 +354,21 @@ and replay () =
 
         
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-(* gameFlow *)
+(* mastermind *)
+(* play *)
 ///<summary>
-/// Initializes and controls the flow of the game by setting dependencies
-/// and variables (E.G. codeMaker, codeBreaker, codePermutations, etc.).
-/// See comments for details.
+/// Starts the game mastermind.
 ///</summary>
+///<returns>
+/// Fun and games.
+///</returns>
+///<remarks>
+/// Dependencies: startGame(), tutorial(), play(),
+///</remarks>
 
 let mastermind () =
     startGame()
     tutorial()
     play()
     // credits()?
+mastermind()
