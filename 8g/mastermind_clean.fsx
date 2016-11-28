@@ -241,7 +241,7 @@ let rec play () =
     let codemaker = (config "codemaker")
     let codebreaker = (config "codebreaker")
     let secretCode = (makeCode codemaker)
-    System.Console.Clear ()
+    System.Console.Clear()
 
     printfn "Press any key to start the game!"
     System.Console.ReadKey() |> ignore
@@ -260,20 +260,20 @@ let rec play () =
         let mutable validateGuess = (validate secretCode guessCode)
         masterBoard <- masterBoard @ [(guessCode), (validateGuess)]
         attempts <- attempts - 1
-
+        
         if validateGuess = (4,0) then
             attempts <- attempts - 13
 
+    let gameover (winner:player) =
+        printfn "%s" (printBoard masterBoard)
+        printfn "The secret code was: %A" secretCode
+        printfn "Game over! %A won!" winner
+        replay()
+        
     if attempts > 0 then
-        printfn "%s" (printBoard masterBoard)
-        printfn "The secret code was: %A" secretCode
-        printfn "Game over! %A won!" codemaker
-        replay()
+        gameover codemaker
     else
-        printfn "%s" (printBoard masterBoard)
-        printfn "The secret code was: %A" secretCode
-        printfn "Game over! %A won!" codebreaker
-        replay()
+        gameover codebreaker
 
 and replay () =
     printfn "Do you want to play again? ([Y]es/[N]o)"
