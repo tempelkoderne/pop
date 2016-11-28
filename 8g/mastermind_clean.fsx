@@ -211,7 +211,7 @@ let startGame () =
     printfn "%70s" "Press any key to continue.\n"
     // Prevents the program from continuing until the user interacts with the console through their keyboard.
     System.Console.ReadKey() |> ignore
-    System.Console.Clear();;
+    System.Console.Clear()
 
 
 (* tutorial *)
