@@ -30,34 +30,35 @@ type player = Human | Computer
 /// A code (codeColor list) containing four elements.
 ///</returns>
 
+let rec inputCode () =
+    printfn "Pick your colors!"
+    printfn "([R]ed; [G]reen; [Y]ellow; [P]urple; [W]hite; [B]lack)"
+    let input = System.Console.ReadLine().ToLower()
+    let sep = [|" "; "; "; ", "; ";"; ","; "-"|]
+    let splinput = input.Split (sep, System.StringSplitOptions.None)
+    if splinput.Length <> 4 || (Array.exists ((=) "") splinput) then
+        printfn "You need to type 4 colors!"
+        inputCode ()
+    else
+        formatCode (Array.toList splinput)
+and formatCode input =
+    match input with
+    | [] -> []
+    | h::t when h.[0] = 'r' -> Red::(formatCode t)
+    | h::t when h.[0] = 'g' -> Green::(formatCode t)
+    | h::t when h.[0] = 'y' -> Yellow::(formatCode t)
+    | h::t when h.[0] = 'p' -> Purple::(formatCode t)
+    | h::t when h.[0] = 'w' -> White::(formatCode t)
+    | h::t when h.[0] = 'b' -> Black::(formatCode t)
+    | h::t -> printfn "Your color must match one of the options above. \nWhat did you mean by \"%s\"?" h; colFixer t
+and colFixer (t:string list) =
+        match System.Console.ReadLine().ToLower()::t with
+        | h::t when h.Length > 0 -> formatCode (h::t)
+        | h::t when h.Length < 1 -> colFixer t
+        | _ -> [Black]
+
 let makeCode (user : player) =
     if user = Human then
-        let rec inputCode () =
-            printfn "Pick your colors!"
-            printfn "([R]ed; [G]reen; [Y]ellow; [P]urple; [W]hite; [B]lack)"
-            let input = System.Console.ReadLine().ToLower()
-            let sep = [|" "; "; "; ", "; ";"; ","; "-"|]
-            let splinput = input.Split (sep, System.StringSplitOptions.None)
-            if splinput.Length <> 4 || (Array.exists ((=) "") splinput) then
-                printfn "You need to type 4 colors!"
-                inputCode ()
-            else
-                formatCode (Array.toList splinput)
-        and formatCode input =
-            match input with
-            | [] -> []
-            | h::t when h.[0] = 'r' -> Red::(formatCode t)
-            | h::t when h.[0] = 'g' -> Green::(formatCode t)
-            | h::t when h.[0] = 'y' -> Yellow::(formatCode t)
-            | h::t when h.[0] = 'p' -> Purple::(formatCode t)
-            | h::t when h.[0] = 'w' -> White::(formatCode t)
-            | h::t when h.[0] = 'b' -> Black::(formatCode t)
-            | h::t -> printfn "Your color must match one of the options above. \nWhat did you mean by \"%s\"?" h; colFixer t
-        and colFixer (t:string list) =
-            match System.Console.ReadLine().ToLower()::t with
-            | h::t when h.Length > 0 -> formatCode (h::t)
-            | h::t when h.Length < 1 -> colFixer t
-            | _ -> [Black]
         inputCode()
     else
         let colors = [Red; Green; Yellow; Purple; White; Black]
@@ -214,9 +215,9 @@ let botGuess (currentBoard : board) =
         [Red;Red;Green;Green]
 
 printfn "botGuess"
-validGuess <- generatePermutations ()
-printfn "Test1: botGuess [] = [Red; Red; Green; Green]: %b" (botGuess [] = [Red; Red; Green; Green])
-validGuess <- Set.empty
+//validGuess <- generatePermutations ()
+//printfn "Test1: botGuess [] = [Red; Red; Green; Green]: %b" (botGuess [] = [Red; Red; Green; Green])
+//validGuess <- Set.empty
 
 (* guess *)
 ///<summary>
@@ -242,9 +243,9 @@ let guess (player : player) (board : board) =
         botGuess (board)
 
 printfn "guess"
-validGuess <- generatePermutations ()
-printfn "Test1: guess Computer [] = [Red; Red; Green; Green]: %b" (guess Computer [] = [Red; Red; Green; Green])
-validGuess <- generatePermutations()
+//validGuess <- generatePermutations ()
+//printfn "Test1: guess Computer [] = [Red; Red; Green; Green]: %b" (guess Computer [] = [Red; Red; Green; Green])
+//validGuess <- generatePermutations()
 
 (* startGame *)
 ///<summary>
