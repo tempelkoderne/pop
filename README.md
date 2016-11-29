@@ -1,2 +1,2 @@
 # pop
-Programmering &amp; problemløsning
+Programmering &amp; problemløsning.
