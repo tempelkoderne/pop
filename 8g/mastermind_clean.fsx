@@ -356,6 +356,53 @@ and replay () =
     else
         replay ()
 
+
+let tests () =
+    let yesno = printfn "Show tests? ([Y]es/[N]o)"; ((System.Console.ReadLine ()).ToLower())
+    if yesno.[0] = 'y' then
+        printfn ""
+        printfn "Press any key to run tests."
+        System.Console.ReadKey() |> ignore
+        System.Console.Clear()
+        
+        printfn ""
+        printfn "TESTS"
+        
+        printfn "validate"
+        printfn "       Test1: validate [Red; Red; White; White] [Red; Red; White; White] = (4,0): %b" (validate [Red; Red; White; White] [Red; Red; White; White] = (4,0))
+        printfn "       Test2: validate [Red; Red; White; Black] [Red; Red; White; White] = (3,0): %b" (validate [Red; Red; White; Black] [Red; Red; White; White] = (3,0))
+        printfn "       Test3: validate [Red; Red; Black; White] [Red; Red; White; Black] = (2,2): %b" (validate [Red; Red; Black; White] [Red; Red; White; Black] = (2,2))
+        printfn "       Test4: validate [Red; Red; White; White] [Red; Red; White; White] = (0,4): %b" (validate [Red; Red; White; White] [White; White; Red; Red] = (0,4))
+        printfn ""
+
+        printfn "printBoard"
+        printfn "       Test1: printBoard [([Black; Black; Black; Black], (2,0))] =        \"Turn  Col1      Col2      Col3      Col4       B, W        ----------------------------------------------------       1     Black     Black     Black     Black     (2, 0)\" : %b" (printBoard [([Black; Black; Black; Black], (2,0))] = "Turn  Col1      Col2      Col3      Col4       B, W \n----------------------------------------------------\n1     Black     Black     Black     Black     (2, 0)\n")
+        validGuess <- generatePermutations ()
+        printfn "       Test1: botGuess [] = [Red; Red; Green; Green]: %b" (botGuess [] = [Red; Red; Green; Green])
+        validGuess <- Set.empty
+        printfn ""
+
+        printfn "guess"
+        validGuess <- generatePermutations ()
+        printfn "       Test1: guess Computer [] = [Red; Red; Green; Green]: %b" (guess Computer [] = [Red; Red; Green; Green])
+        validGuess <- generatePermutations()
+        printfn ""
+
+        printfn "generatePermutations"
+        printfn "       Test1: generatePermutations().Count = (pown 6 4): %b" (generatePermutations().Count = (pown 6 4))
+        printfn ""
+
+        printfn "See report for tests:"
+        printfn "config, makeCode, mastermind, play, startGame."
+        printfn ""
+
+
+
+        printfn "\nbotGuess"
+    else
+        printfn "Oh well, maybe another time then!"
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 (* mastermind *)
 ///<summary>
@@ -372,7 +419,7 @@ let mastermind () =
     startGame()
     tutorial()
     play()
-    // credits()?
+    tests()
 mastermind()
 
 
@@ -380,47 +427,3 @@ mastermind()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 (*TESTS*)
 
-printfn ""
-printfn "Press any key to run tests."
-System.Console.ReadKey() |> ignore
-System.Console.Clear()
-
-printfn ""
-printfn "TESTS"
-
-printfn "validate"
-printfn "       Test1: validate [Red; Red; White; White] [Red; Red; White; White] = (4,0): %b" (validate [Red; Red; White; White] [Red; Red; White; White] = (4,0))
-printfn "       Test2: validate [Red; Red; White; Black] [Red; Red; White; White] = (3,0): %b" (validate [Red; Red; White; Black] [Red; Red; White; White] = (3,0))
-printfn "       Test3: validate [Red; Red; Black; White] [Red; Red; White; Black] = (2,2): %b" (validate [Red; Red; Black; White] [Red; Red; White; Black] = (2,2))
-printfn "       Test4: validate [Red; Red; White; White] [Red; Red; White; White] = (0,4): %b" (validate [Red; Red; White; White] [White; White; Red; Red] = (0,4))
-printfn ""
-
-printfn "printBoard"
-printfn "       Test1: printBoard [([Black; Black; Black; Black], (2,0))] = 
-       \"Turn  Col1      Col2      Col3      Col4       B, W 
-       ----------------------------------------------------
-       1     Black     Black     Black     Black     (2, 0)\" : %b" (printBoard [([Black; Black; Black; Black], (2,0))] = "Turn  Col1      Col2      Col3      Col4       B, W 
-----------------------------------------------------
-1     Black     Black     Black     Black     (2, 0)
-")
-printfn ""
-
-printfn "botGuess"
-validGuess <- generatePermutations ()
-printfn "       Test1: botGuess [] = [Red; Red; Green; Green]: %b" (botGuess [] = [Red; Red; Green; Green])
-validGuess <- Set.empty
-printfn ""
-
-printfn "guess"
-validGuess <- generatePermutations ()
-printfn "       Test1: guess Computer [] = [Red; Red; Green; Green]: %b" (guess Computer [] = [Red; Red; Green; Green])
-validGuess <- generatePermutations()
-printfn ""
-
-printfn "generatePermutations"
-printfn "       Test1: generatePermutations().Count = (pown 6 4): %b" (generatePermutations().Count = (pown 6 4))
-printfn ""
-
-printfn "See report for tests:"
-printfn "config, makeCode, mastermind, play, startGame."
-printfn ""
