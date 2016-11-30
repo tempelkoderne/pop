@@ -385,6 +385,9 @@ let tests () =
 
         printfn "printBoard"
         printfn "       Test1: printBoard [([Black; Black; Black; Black], (2,0))] =        \"Turn  Col1      Col2      Col3      Col4       B, W        ----------------------------------------------------       1     Black     Black     Black     Black     (2, 0)\" : %b" (printBoard [([Black; Black; Black; Black], (2,0))] = "Turn  Col1      Col2      Col3      Col4       B, W \n----------------------------------------------------\n1     Black     Black     Black     Black     (2, 0)\n")
+        printfn ""
+
+        printfn "botGuess"
         validGuess <- generatePermutations ()
         printfn "       Test1: botGuess [] = [Red; Red; Green; Green]: %b" (botGuess [] = [Red; Red; Green; Green])
         validGuess <- Set.empty
@@ -403,10 +406,6 @@ let tests () =
         printfn "See report for tests:"
         printfn "config, makeCode, mastermind, play, startGame."
         printfn ""
-
-
-
-        printfn "\nbotGuess"
     else
         printfn "Oh well, maybe another time then!"
 
