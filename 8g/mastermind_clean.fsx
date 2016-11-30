@@ -213,7 +213,7 @@ let botGuess (currentBoard : board) =
 
 let guess (player : player) (board : board) =
     if player = Human then
-        makeCode (player)
+        inputCode ()
     else
         botGuess (board)
 
