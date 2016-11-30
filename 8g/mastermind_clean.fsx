@@ -384,7 +384,7 @@ let tests () =
         printfn ""
 
         printfn "printBoard"
-        printfn "       Test1: printBoard [([Black; Black; Black; Black], (2,0))] =        \"Turn  Col1      Col2      Col3      Col4       B, W        ----------------------------------------------------       1     Black     Black     Black     Black     (2, 0)\" : %b" (printBoard [([Black; Black; Black; Black], (2,0))] = "Turn  Col1      Col2      Col3      Col4       B, W \n----------------------------------------------------\n1     Black     Black     Black     Black     (2, 0)\n")
+        printfn "       Test1: printBoard [([Black; Black; Black; Black], (2,0))] =        \n\"Turn  Col1      Col2      Col3      Col4       B, W        \n----------------------------------------------------    \n   1     Black     Black     Black     Black     (2, 0)\" : %b" (printBoard [([Black; Black; Black; Black], (2,0))] = "Turn  Col1      Col2      Col3      Col4       B, W \n----------------------------------------------------\n1     Black     Black     Black     Black     (2, 0)\n")
         printfn ""
 
         printfn "botGuess"
