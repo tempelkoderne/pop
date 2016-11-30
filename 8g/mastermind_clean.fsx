@@ -351,11 +351,19 @@ and replay () =
     if toggle.Length > 0 then
         match toggle with
         | x when x.[0] = 'y' -> validGuess <- generatePermutations (); play ()
-        | x when x.[0] = 'n' -> System.Console.Clear(); printfn "Goodbye."
+        | x when x.[0] = 'n' -> System.Console.Clear()
         | _ -> replay ()
     else
         replay ()
 
+
+(* tests *)
+///<summary>
+/// Prompts the user to either show black box testing or quit.
+///</summary>
+///<returns>
+/// The results of black box testing or nothing.
+///</returns>
 
 let tests () =
     let yesno = printfn "Show tests? ([Y]es/[N]o)"; ((System.Console.ReadLine ()).ToLower())
@@ -416,14 +424,11 @@ let tests () =
 ///</remarks>
 
 let mastermind () =
-    startGame()
-    tutorial()
-    play()
-    tests()
+    try
+        startGame()
+        tutorial()
+        play()
+        tests()
+    with
+        | _ -> tests()
 mastermind()
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-(*TESTS*)
-
