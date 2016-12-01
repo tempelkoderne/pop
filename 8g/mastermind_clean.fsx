@@ -367,7 +367,7 @@ and replay () =
 
 let tests () =
     let yesno = printfn "Show tests? ([Y]es/[N]o)"; ((System.Console.ReadLine ()).ToLower())
-    if yesno.[0] = 'y' then
+    if yesno.Length > 0 && yesno.[0] = 'y' then
         printfn ""
         printfn "Press any key to run tests."
         System.Console.ReadKey() |> ignore
