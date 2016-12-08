@@ -63,10 +63,10 @@ let makeCode (user : player) =
     else
         let colors = [Red; Green; Yellow; Purple; White; Black]
         let rand = System.Random()
-        let code = [colors.[rand.Next(0,5)];
-                    colors.[rand.Next(0,5)];
-                    colors.[rand.Next(0,5)];
-                    colors.[rand.Next(0,5)]]
+        let code = [colors.[rand.Next(0,6)];
+                    colors.[rand.Next(0,6)];
+                    colors.[rand.Next(0,6)];
+                    colors.[rand.Next(0,6)]]
         code
 
 (* validate *)
@@ -407,7 +407,7 @@ let tests () =
         printfn "config, makeCode, mastermind, play, startGame."
         printfn ""
     else
-        printfn "Oh well, maybe another time then!"
+        printfn "Oh well, maybe another time then. Goodbye!"
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
