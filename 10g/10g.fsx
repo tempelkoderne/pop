@@ -32,4 +32,3 @@ type Herbivore (weight:float, speedMax:float) =
 let cheetah = Carnivore (50.0, 114.0)
 let antelope = Herbivore (50.0, 95.0)
 let wildebeest = Herbivore (200.0, 80.0)
-
