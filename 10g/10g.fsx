@@ -42,3 +42,6 @@ let cheetah = Carnivore (50.0, 114.0)
 let antelope = Herbivore (50.0, 95.0)
 let wildebeest = Herbivore (200.0, 80.0)
 
+let randomWeightCheetah = Carnivore (50.0)
+let randomWeightAntelope = Herbivore (50.0)
+let randomWeightWildebeest = Herbivore (200.0)
