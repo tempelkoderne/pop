@@ -4,14 +4,14 @@ type Animal (weight:float, speedMax:float) =
     let mutable SpeedCurrent = 0.0
     let rand = System.Random()
     
-    member self.Food = (float (rand.Next(0,101))) / 100.0
+    member self.Food = self.FoodNeed() * (float (rand.Next(0, 101)))/100.0 
     member self.Weight = weight
     member self.SpeedMax = speedMax
     member self.Speed
         with get() = SpeedCurrent
 
     member self.FoodNeed() = weight/2.0
-    member self.SpeedSet() = (SpeedCurrent <- self.SpeedMax * (self.Food * self.FoodNeed()))
+    member self.Run() = (SpeedCurrent <- self.SpeedMax * self.Food/100.0)
 
     new (speedMax:float) =
         let rand = System.Random()
