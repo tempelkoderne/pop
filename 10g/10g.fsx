@@ -93,34 +93,61 @@ type Herbivore =
     member self.Food = self.weight * 0.40
 
 (*TESTS*)
+
+printfn "" //Terminal eye candy
+printfn "             Test: For creating an animal with negative and weight or speed:"
+printfn "" //Terminal eye candy
+
+let anorexicVegetarianOtter = Carnivore (-50.0, 30.0)
+let anorexicPsychoOtter = Herbivore (-50.0, 30.0)
+
+let leglessVeganGorilla = Herbivore(300.0, -30.0)
+let leglessMeatGorilla = Carnivore(300.0, -30.0)
+
+let voidVeganCat = Herbivore(-15.0, -30.0)
+let voidMeatCat = Carnivore(-15.0, -30.0)
+
+anorexicVegetarianOtter.Run()
+anorexicPsychoOtter.Run()
+leglessVeganGorilla.Run()
+leglessMeatGorilla.Run()
+voidVeganCat.Run()
+voidMeatCat.Run()
+
+printfn "anorexicVegetarianOtter =   Carnivore(-50.0, 30.0) = 0.0 speed  :   %b" (anorexicVegetarianOtter.speed = 0.0)
+printfn "anorexicPsychoOtter     =   Herbivore(-50.0, 30.0) = 0.0 speed  :   %b" (anorexicPsychoOtter.speed = 0.0)
+printfn "leglessVeganGorilla     =   Herbivore (300.0, -30.0) = 0.0 speed:   %b" (leglessVeganGorilla.speed = 0.0)
+printfn "leglessMeatGorilla      =   Carnivore (300.0, -30.0) = 0.0 speed:   %b" (leglessMeatGorilla.speed = 0.0)
+printfn "voidMeatCat             =   Carnivore (-15.0, -30.0) = 0.0 speed:   %b" (voidVeganCat.speed = 0.0)
+printfn "voidVeganCat            =   Herbivore (-15.0, -30.0) = 0.0 speed:   %b" (voidMeatCat.speed = 0.0)
+
+printfn "" //Terminal eye candy
+printfn "             Test: Animal race:"
+printfn "" //Terminal eye candy
+
 let cheetah = Carnivore (50.0, 114.0)
 let antelope = Herbivore (50.0, 95.0)
 let wildebeest = Herbivore (200.0, 80.0)
 
-cheetah.Run()
-antelope.Run()
-wildebeest.Run()
-
-if (cheetah.speed > antelope.speed) && (cheetah.speed > wildebeest.speed) then
-    printfn "Winner: Cheetah!"
-elif (antelope.speed > cheetah.speed) && (antelope.speed > wildebeest.speed) then
-    printfn "Winner: Antelope!"
-else
-    printfn "Winner: Wildebeest!"
-
-
-let randomCheetah = Carnivore (50.0)
-let randomAntelope = Herbivore (50.0)
-let randomWildebeest = Herbivore (200.0)
-
-randomCheetah.Run()
-randomAntelope.Run()
-randomWildebeest.Run()
-
-if (randomCheetah.speed > randomAntelope.speed) && (randomCheetah.speed > randomWildebeest.speed) then
-    printfn "Winner: Cheetah!"
-elif (randomAntelope.speed > randomCheetah.speed) && (randomAntelope.speed > randomWildebeest.speed) then
-    printfn "Winner: Antelope!"
-else
-    printfn "Winner: Wildebeest!"
+for i = 1 to 3 do
+    printfn "Round: %A \n" i
+    printfn "--------------------------------------------------------------------------------------------------------------------------------------"
+    cheetah.Run()
+    wildebeest.Run()
+    antelope.Run()
+    printfn "Cheetah speed    : %A km/h.   Cheetah food    :%36A   Cheetah food needed    : %A Covering 10km in %A hour(s)" cheetah.speed cheetah.Food (cheetah.FoodNeed()) (10.0/cheetah.speed)
+    printfn "Wildebeest speed : %A km/h. Wildebeest food   :%36A  Wildebeest food needed  : %A Covering 10km in %A hour(s)" wildebeest.speed wildebeest.Food (wildebeest.FoodNeed()) (10.0/cheetah.speed)
+    printfn "Antelope speed   : %A km/h.  Antelope food    :%36A   Antelope food needed   : %A Covering 10km in %A hour(s)" antelope.speed antelope.Food (antelope.FoodNeed()) (10.0/cheetah.speed)
+    printfn ""
+    printfn "The Winner of round %A is:" i
+    if (cheetah.speed > antelope.speed) && (cheetah.speed > wildebeest.speed) then
+        printfn "Winner: Cheetah!"
+    elif (antelope.speed > cheetah.speed) && (antelope.speed > wildebeest.speed) then
+        printfn "Winner: Antelope!"
+    elif (wildebeest.speed > cheetah.speed) && (wildebeest.speed >antelope.speed) then
+        printfn "Winner: Wildebeest!"
+    else
+        printfn "It's a DRAW!!"
     
+    printfn "--------------------------------------------------------------------------------------------------------------------------------------"
+    printfn ""
