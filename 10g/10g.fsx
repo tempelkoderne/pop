@@ -1,3 +1,9 @@
+(* PoP Assignment 10g - Animal Race *)
+// Tempelkoderne
+//      Anders Geil
+//      Peter Lim
+//      Tobias Stannius
+
 (*Animal*)
 ///<summary>
 /// A class object.
@@ -28,7 +34,7 @@ type Animal =
         speedMax = max 0.0 speedMax
         speed = 0.0
         }
-    // Additional constructor.
+    // Additional constructor enabling instances to be created with only one supplied parameter.
     new (speedMax:float) = {
         weight = float (System.Random().Next(70,301))
         speedMax = max 0.0 speedMax
@@ -56,9 +62,11 @@ type Animal =
 ///</returns>
 type Carnivore =
     inherit Animal
-    
+
+    // Inherit constructor and additional constructor explicitly.
     new (weight, speedMax) = {inherit Animal (weight, speedMax)}
-    new (speedMax) = {inherit Animal (speedMax)}    
+    new (speedMax) = {inherit Animal (speedMax)}
+    // Adjusts the self.Food attribute accordingly.
     member self.Food = self.weight * 0.08
 
 (*Herbivore*)
@@ -78,12 +86,13 @@ type Carnivore =
 type Herbivore =
     inherit Animal
     
+    // Inherit constructor and additional constructor explicitly.
     new (weight, speedMax) = { inherit Animal (weight, speedMax) }
     new (speedMax) = { inherit Animal (speedMax) }
-
+    // Adjusts the self.Food attribute accordingly.
     member self.Food = self.weight * 0.40
 
-
+(*TESTS*)
 let cheetah = Carnivore (50.0, 114.0)
 let antelope = Herbivore (50.0, 95.0)
 let wildebeest = Herbivore (200.0, 80.0)
@@ -114,3 +123,4 @@ elif (randomAntelope.speed > randomCheetah.speed) && (randomAntelope.speed > ran
     printfn "Winner: Antelope!"
 else
     printfn "Winner: Wildebeest!"
+    
