@@ -42,6 +42,29 @@ let cheetah = Carnivore (50.0, 114.0)
 let antelope = Herbivore (50.0, 95.0)
 let wildebeest = Herbivore (200.0, 80.0)
 
-let randomWeightCheetah = Carnivore (50.0)
-let randomWeightAntelope = Herbivore (50.0)
-let randomWeightWildebeest = Herbivore (200.0)
+cheetah.Run()
+antelope.Run()
+wildebeest.Run()
+
+if (cheetah.speed > antelope.speed) && (cheetah.speed > wildebeest.speed) then
+    printfn "Winner: Cheetah!"
+elif (antelope.speed > cheetah.speed) && (antelope.speed > wildebeest.speed) then
+    printfn "Winner: Antelope!"
+else
+    printfn "Winner: Wildebeest!"
+
+
+let randomCheetah = Carnivore (50.0)
+let randomAntelope = Herbivore (50.0)
+let randomWildebeest = Herbivore (200.0)
+
+randomCheetah.Run()
+randomAntelope.Run()
+randomWildebeest.Run()
+
+if (randomCheetah.speed > randomAntelope.speed) && (randomCheetah.speed > randomWildebeest.speed) then
+    printfn "Winner: Cheetah!"
+elif (randomAntelope.speed > randomCheetah.speed) && (randomAntelope.speed > randomWildebeest.speed) then
+    printfn "Winner: Antelope!"
+else
+    printfn "Winner: Wildebeest!"
