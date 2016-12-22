@@ -5,13 +5,13 @@ type Animal =
     val speedMax : float
     val mutable speed : float
     new (weight, speedMax) = {
-        weight = weight
-        speedMax = speedMax
+        weight = max 0.0 weight
+        speedMax = max 0.0 speedMax
         speed = 0.0
         }
     new (speedMax:float) = {
         weight = float (System.Random().Next(70,301))
-        speedMax = speedMax
+        speedMax = max 0.0 speedMax
         speed = 0.0
         }
     
@@ -24,8 +24,8 @@ type Animal =
 type Carnivore =
     inherit Animal
     
-    new (weight, speedMax) = { inherit Animal (weight, speedMax) }
-    new (speedMax) = { inherit Animal (speedMax) }    
+    new (weight, speedMax) = {inherit Animal (weight, speedMax)}
+    new (speedMax) = {inherit Animal (speedMax)}    
     member self.Food = self.weight * 0.08
 
 
