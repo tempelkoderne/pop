@@ -93,9 +93,8 @@ type Herbivore =
     member self.Food = self.weight * 0.40
 
 (*TESTS*)
-
 printfn "" //Terminal eye candy
-printfn "             Test: For creating an animal with negative and weight or speed:"
+printfn "             Test: Creating an animal with negative weight and / or speed:"
 printfn "" //Terminal eye candy
 
 let anorexicVegetarianOtter = Carnivore (-50.0, 30.0)
@@ -122,7 +121,7 @@ printfn "voidMeatCat             =   Carnivore (-15.0, -30.0) = 0.0 speed:   %b"
 printfn "voidVeganCat            =   Herbivore (-15.0, -30.0) = 0.0 speed:   %b" (voidMeatCat.speed = 0.0)
 
 printfn "" //Terminal eye candy
-printfn "             Test: Animal race:"
+printfn "             Test race:"
 printfn "" //Terminal eye candy
 
 let cheetah = Carnivore (50.0, 114.0)
@@ -130,7 +129,7 @@ let antelope = Herbivore (50.0, 95.0)
 let wildebeest = Herbivore (200.0, 80.0)
 
 for i = 1 to 3 do
-    printfn "Round: %A \n" i
+    printf "Round: %A \n" i
     printfn "--------------------------------------------------------------------------------------------------------------------------------------"
     cheetah.Run()
     wildebeest.Run()
@@ -139,15 +138,15 @@ for i = 1 to 3 do
     printfn "Wildebeest speed : %A km/h. Wildebeest food   :%36A  Wildebeest food needed  : %A Covering 10km in %A hour(s)" wildebeest.speed wildebeest.Food (wildebeest.FoodNeed()) (10.0/cheetah.speed)
     printfn "Antelope speed   : %A km/h.  Antelope food    :%36A   Antelope food needed   : %A Covering 10km in %A hour(s)" antelope.speed antelope.Food (antelope.FoodNeed()) (10.0/cheetah.speed)
     printfn ""
-    printfn "The Winner of round %A is:" i
+    printf "The winner of round %A is the " i
     if (cheetah.speed > antelope.speed) && (cheetah.speed > wildebeest.speed) then
-        printfn "Winner: Cheetah!"
+        printfn "Cheetah!"
     elif (antelope.speed > cheetah.speed) && (antelope.speed > wildebeest.speed) then
-        printfn "Winner: Antelope!"
+        printfn "Antelope!"
     elif (wildebeest.speed > cheetah.speed) && (wildebeest.speed >antelope.speed) then
-        printfn "Winner: Wildebeest!"
+        printfn "Wildebeest!"
     else
-        printfn "It's a DRAW!!"
+        printfn "... Nevermind, it's a DRAW!!"
     
     printfn "--------------------------------------------------------------------------------------------------------------------------------------"
     printfn ""
