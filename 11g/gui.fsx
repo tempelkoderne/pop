@@ -1,67 +1,91 @@
 open System.Windows.Forms
 open System.Drawing
+// open Graph
 
-type coordinates = (float * float) list
+// define types
 type pen = Color * float
-type polygon = coordinates * pen
+type point = (float * float)
+type polyline = point list
 
-let createForm backgroundColor (width, height) title draw =
-    let win = new Form ()
-    win.Text <- title
-    win.BackColor <- backgroundColor
-    win.ClientSize <- Size (width, height)
-    win.Paint.Add draw
-    win
-
-let drawPoints (polygLst:polygon list) (e:PaintEventArgs) =
-    let pairToPoint (x:float, y:float) =
-        Point (int (round x), int (round y))
-
-    for polyg in polygLst do
-        let coords, (color, width) = polyg
-        let pen = new Pen (color, single width)
-        let Points = Array.map pairToPoint (List.toArray coords)
-        e.Graphics.DrawLines (pen, Points)
-
-let translatePoint (dx, dy) (x, y) =
-    (x + dx, y + dy)
-
-let translatePoints (dx, dy) arr =
-    List.map (translatePoint (dx, dy)) arr
-
-let rotatePoint theta (x, y) =
-    (x * cos theta - y * sin theta, x * sin theta + y * cos theta)
-
-let rotatePoints theta arr =
-    List.map (rotatePoint theta) arr
+// set helpers
+let addPoints p0 p1 : point =
+  (fst p0 + fst p1, snd p0 + snd p1)
+let rotatePoint theta p : point =
+  ((fst p) * cos theta - (snd p) * sin theta, (fst p) * sin theta + (snd p) * cos theta)
+let rotatePoints theta l : polyline =
+  List.map (rotatePoint theta) l
+let scalePoint s p : point =
+  (s * fst p, s * snd p)
+let translatePoints d l : polyline =
+  List.map (addPoints d) l
 
 
+(***** BUILD SOLAR SYSTEM *****)
 
-/// draw stuff
-let title = "Transforming polygons"
-let backgroundColor = Color.White
-let size = (400, 200)
-let points = [(0.0, 0.0); (10.0, 170.0); (320.0, 20.0); (0.0, 0.0)]
-let polygLst =
-    [(points, (Color.Black, 1.0));
-     (translatePoints (40.0, 30.0) points, (Color.Red, 2.0));
-     (rotatePoints (1.0 * System.Math.PI / 180.0) points, (Color.Green, 1.0))]
+// create planet
+let createPlanet backgroundColor (width, height) title draw =
+  let win = new Form ()
+  win.Text <- title
+  win.BackColor <- backgroundColor
+  win.ClientSize <- Size (width, height)
+  win.Paint.Add draw
+  win
 
-let win = createForm backgroundColor size title (drawPoints polygLst)
-Application.Run win
+// draw planet
+(*
+let drawPlanet (coords : polyline byref) (pen : pen) (e : PaintEventArgs) =
+  let pairToPoint p =
+    Point (int (round (fst p)), int (round (snd p)))
+  let color, width = pen
+  let Pen = new Pen (color, single width)
+  let Points = Array.map pairToPoint (List.toArray coords)
+  e.Graphics.DrawLines (Pen, Points)
+*)
+
+let drawPlanet (coords : float*float []) (pen : pen) (e : PaintEventArgs) =
+  let pairToPoint p = Point (int (round (fst p)), int (round (snd p)))
+  let color, width = pen
+  let Pen = new Pen (color, single width)
+  let Points = Array.map pairToPoint (coords)
+  
+  let shape = new Rectangle(Point(fst coords, snd coords),
+                            Size(20, 20))
+  e.Graphics.FillEllipse (Pen, Points, shape)
+
+
+// position updates
+let updatePlanet (planet : Form) (coords : int*int) dtheta center showtime =
+  let centeredCoords = translatePoints (scalePoint -1.0 center) coords
+  let rotatedCoords = rotatePoints dtheta centeredCoords
+  coords <- translatePoints center rotatedCoords
+  planet.Refresh ()
+
+
+// setup solar system details
+let title = "Solar system"
+let backgroundColor = Color.Black
+let size = (400, 400)
+let polarToCartesian r theta = (r * cos theta, r * sin theta)
+let mutable coords = List.map (polarToCartesian 100.0) [0.0;
+                                                        2.0/3.0*System.Math.PI;
+                                                        4.0/3.0*System.Math.PI;
+                                                        0.0]
+let center = scalePoint (1.0/2.0) (float (fst size), float (snd size))
+coords <- translatePoints center coords
+let pen = (Color.Red, 1.0)
+
+// let col = Color.Red
+// let rad = 10
+
+let earth = createPlanet backgroundColor size title (drawPlanet &coords pen) 
 
 
 
+// setup timer
+let timer = new Timer()
+timer.Interval <- 100
+timer.Enabled <- true
+let dtheta = 0.01
+timer.Tick.Add (updatePlanet earth &coords dtheta center)
 
-
-let drawPlanet (coord:int*int, r:int) =
-    let drawPlanet = new Form(Text = "die Sonne, ja",
-                              BackColor = Color.Black,
-                              ClientSize = Size (600,600))
-    drawPlanet.Paint.Add(fun draw ->
-        draw.Graphics.FillEllipse(
-            new SolidBrush(Color.Red), //planet color
-            new Rectangle(Point(fst coord, snd coord), //planet pos
-                          Size(r, r))) //planet bounding box
-            )
-    Application.Run(drawPlanet)
+Application.Run earth
