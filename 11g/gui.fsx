@@ -3,7 +3,7 @@ open System.Drawing
 
 // define types
 type coord = (int * int)
-type path = point list
+type path = coord list
 type planet = (Color * int)
 // type planets = planet * point list
 
