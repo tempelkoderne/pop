@@ -29,14 +29,16 @@ let compInitVectors (day0 : float []) (day1: float []) =
     let speed = ((vLength / 86400.0) / 1000.0) * au
     printfn "- Planetary speed: %A km/s" speed                                // Planetens beregnede hastighed. Kun til sammenligning med officielle målinger.
     printfn ""
+    printfn "%A" [|(x0,y0);(aX,aY);(vX,vY)|]
     sprintf ""  // For at gøre Fsharp glad, indtil vi ved, hvad funktionen skal returnere.
 
 // day0.[0] = long1, lat1, rad1 ... long2, lat2, rad2
-printfn "a0 is the initial acceleration vector.\nv0 is the initial speed vector.\nr0 is the initial position vector."
-printfn ""
+// For dato: 2457388.500000000
+// printfn "a0 is the initial acceleration vector.\nv0 is the initial speed vector.\nr0 is the initial position vector."
+// printfn ""
 
-printfn "Mercury:"
-(compInitVectors [|30.3790; -2.1662; 0.325304334680|] [|36.0860; -1.4902; 0.321243721300|])
+// printfn "Mercury 01 to 02 jan 2016:"
+// (compInitVectors [|30.3790; -2.1662; 0.325304334680|] [|36.0860; -1.4902; 0.321243721300|])
 
 // printfn "Venus:"
 // (compInitVectors [|184.6680; 3.2280; 0.720361799843|] [|186.2854; 3.1971; 0.720471891014|])
@@ -61,3 +63,32 @@ printfn "Mercury:"
 
 // printfn "Pluto:"
 // (compInitVectors [|284.9817; 1.6359; 33.013492974393|] [|284.9870; 1.6343; 33.014108060669|])
+
+// Omregner planetens position fra sfæriske koordinater til kartesianske.
+// let compPosition (day0 : float []) =
+//     let degToRad (deg : float) = (deg) * (System.Math.PI)/180.0
+//     let longtitude0 = (degToRad day0.[0])
+//     let latitude0 = (degToRad (day0.[1] + 90.0))
+//     let x0 = (day0.[2]) * System.Math.Sin(latitude0) * System.Math.Cos(longtitude0)
+//     let y0 = (day0.[2]) * System.Math.Sin(latitude0) * System.Math.Sin(longtitude0)
+//     printfn "- Positional vector, r: < %A,   %A >" x0 y0
+//     sprintf ""
+// printfn "Mercury 01 jan 2016:"
+// (compPosition [|30.3790; -2.1662; 0.325304334680|])
+// printfn "Mercury 02 jan 2016:"
+// (compPosition [|36.0860; -1.4902; 0.321243721300|])
+// printfn "Mercury 03 jan 2016:"
+// (compPosition [|41.9275; -0.7825; 0.317624647948|])
+// printfn "Mercury 04 jan 2016:"
+// (compPosition [|47.8924; -0.0514; 0.314495672985|])
+
+
+// Udkast til rekursiv positionsfremskriver.
+let planetaryPositions (days : int) (r0 : float * float) (v0 : float * float) (a0 : float * float) =
+    let positions = [||]
+    let rec computePositions (days : int) (r0 : float * float) (v0 : float * float) (a0 : float * float) =
+        if days >= 1 then
+            // compute something, append to array and recursive call with new values
+        else
+            // append to array and end recursion
+    positions
