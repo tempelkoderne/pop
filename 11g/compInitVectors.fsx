@@ -65,7 +65,7 @@ let compInitVectors (day0 : float []) (day1: float []) =
 // (compInitVectors [|284.9817; 1.6359; 33.013492974393|] [|284.9870; 1.6343; 33.014108060669|])
 
 // Omregner planetens position fra sfæriske koordinater til kartesianske.
-// let compPosition (day0 : float []) =
+// let sphericToCartesian (day0 : float []) =
 //     let degToRad (deg : float) = (deg) * (System.Math.PI)/180.0
 //     let longtitude0 = (degToRad day0.[0])
 //     let latitude0 = (degToRad (day0.[1] + 90.0))
@@ -74,21 +74,37 @@ let compInitVectors (day0 : float []) (day1: float []) =
 //     printfn "- Positional vector, r: < %A,   %A >" x0 y0
 //     sprintf ""
 // printfn "Mercury 01 jan 2016:"
-// (compPosition [|30.3790; -2.1662; 0.325304334680|])
+// (sphericToCartesian [|30.3790; -2.1662; 0.325304334680|])
 // printfn "Mercury 02 jan 2016:"
-// (compPosition [|36.0860; -1.4902; 0.321243721300|])
+// (sphericToCartesian [|36.0860; -1.4902; 0.321243721300|])
 // printfn "Mercury 03 jan 2016:"
-// (compPosition [|41.9275; -0.7825; 0.317624647948|])
+// (sphericToCartesian [|41.9275; -0.7825; 0.317624647948|])
 // printfn "Mercury 04 jan 2016:"
-// (compPosition [|47.8924; -0.0514; 0.314495672985|])
+// (sphericToCartesian [|47.8924; -0.0514; 0.314495672985|])
 
 
 // Udkast til rekursiv positionsfremskriver.
-let planetaryPositions (days : int) (r0 : float * float) (v0 : float * float) (a0 : float * float) =
-    let positions = [||]
-    let rec computePositions (days : int) (r0 : float * float) (v0 : float * float) (a0 : float * float) =
+// Compute planetary positions
+let cPP (days : int) (r0 : float * float) (v0 : float * float) (a0 : float * float) =
+    // Vi bør måske lave en vektor-class/type med mulighed for addition og gange. Her anvendes custom operators.
+    let ( .+ ) x y = ((fst x + fst y),(snd x + snd y))
+    let ( .* ) x y = (x*(fst y),x*(snd y))
+
+    // Recursive function. Creates an array containing tuples of x,y-coordinates.
+    let rec compute (days : int) (r0 : float * float) (v0 : float * float) (a0 : float * float) =
         if days >= 1 then
-            // compute something, append to array and recursive call with new values
+            // compute r, concatentate result to array and recursive call with new values
+            let r1 = (r0 .+ v0)
+            let r0Len = sqrt (((fst r0)**2.0) + ((snd r0)**2.0))
+            let a1 = -(GMs/(r0Len**3.0)) .* r0
+            let v1 = (v0 .+ a0)
+
+            Array.concat [[|r0|] ; (compute (days - 1) r1 v1 a1)]
         else
-            // append to array and end recursion
+            // days < 1, return empty array.
+            [||]
+    let positions = compute days r0 v0 a0
     positions
+
+// Test med begyndelsesdata fra Merkur.
+printfn "%A" (cPP 4 (0.2804392026,0.1643945659) (-0.02091908706,0.0247536421) (-0.002415813724,-0.001416159527))
