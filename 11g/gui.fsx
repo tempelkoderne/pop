@@ -7,8 +7,13 @@ type planet = (Color * int)
 // type planets = planet * path list
 
 // convert to pixel coords
-let toPx (x:float) = log10(x + 1.0) * 100.0
-let ofPx (x:float) = 10.0**(x/100.0)-1.0
+let toPx (x:coord) = (log10((fst x) + 100.0) * 100.0, log10((snd x) + 100.0) * 100.0)
+let ofPx (x:coord) = (10.0**((fst x)/100.0) - 100.0, 10.0**((fst x)/100.0) - 100.0)
+
+let scaleUp (x:coord) = (100.0 * (fst x), 100.0 * (snd x))
+let scaleDown (x:coord) = ((fst x)/100.0, (fst x)/100.0)
+
+let offset (r:int) (x:coord) = ((float r) + (fst x), (float r) + (snd x))
 
 // compute next position
 let CNPP (data : coord []) =
@@ -36,7 +41,7 @@ let bigBang backColor (width, height) title draw =
 
 // draw planets
 let drawPlanet (pos:coord byref) (pl:planet) (e:PaintEventArgs) =
-    let x, y = pos
+    let x, y = toPx pos
     // let trans_x, trans_y = toPx x + 300.0, toPx y + 300.0
     let color, radius = pl
     let brush = new SolidBrush (color)
@@ -45,38 +50,29 @@ let drawPlanet (pos:coord byref) (pl:planet) (e:PaintEventArgs) =
     e.Graphics.FillEllipse (brush, shape)
 
 // god config
-let mutable pos0 = (100.0 + 0.2804392026, 100.0 + 0.1643945659)
-let mutable v0 = (-0.02091908706, 0.0247536421)
-let mutable a0 = (-0.002415813724, -0.001416159527)
-// 8.530856837, -31.87831479
+let mutable pos0 = scaleUp (-0.1666759033, 0.969084551)
+let mutable v0 = scaleUp (-0.01720978776, -0.003125375992)
+let mutable a0 = scaleUp (5.187516652e-05, -0.0003016118194)
 
-// let mutable pos0:path = [(100,100);
-//                           (200,100);
-//                           (200,200);
-//                           (100,200);
-//                           (100,100)]
-let earth:planet = (Color.Blue, 30)
+let earth:planet = (Color.Blue, 50)
 let size:(int*int) = (700,700)
 let bcolor:Color = Color.Black
 let title:string = "Solar System"
 let solar = bigBang bcolor size title (drawPlanet &pos0 earth)
 
-// position updates
-
+// move planets
 let updateWorld (world:Form) (pos:coord byref) (v:coord byref) (a:coord byref) showtime =
-    // pos <- [(1 + (fst (pos.[0])), (1 + snd (pos.[0])))]
-    let state = CNPP [|pos; v; a|]
-    pos <- state.[0]
-    v <- state.[1]
-    a <- state.[2]
-    // pos <- calcPos(iniCoor 1.0) // calcPos under construction
+    let state = CNPP [|scaleDown pos; scaleDown v; scaleDown a|]
+    pos <- scaleUp state.[0]
+    v <- scaleUp state.[1]
+    a <- scaleUp state.[2]
+    printfn "%A" state
     world.Refresh()
 
 
 // setup timer
-let timer = new Timer(Interval = 100,
+let timer = new Timer(Interval = 10,
                       Enabled = true)
-// timer.Tick.Add (fun showtime -> updateWorld solar &pos1)                
 timer.Tick.Add (updateWorld solar &pos0 &v0 &a0)
 
 // run system
