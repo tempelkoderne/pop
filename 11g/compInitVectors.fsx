@@ -81,30 +81,3 @@ let compInitVectors (day0 : float []) (day1: float []) =
 // (sphericToCartesian [|41.9275; -0.7825; 0.317624647948|])
 // printfn "Mercury 04 jan 2016:"
 // (sphericToCartesian [|47.8924; -0.0514; 0.314495672985|])
-
-
-// Udkast til rekursiv positionsfremskriver.
-// Compute planetary positions
-let cPP (days : int) (r0 : float * float) (v0 : float * float) (a0 : float * float) =
-    // Vi bør måske lave en vektor-class/type med mulighed for addition og gange. Her anvendes custom operators.
-    let ( .+ ) x y = ((fst x + fst y),(snd x + snd y))
-    let ( .* ) x y = (x*(fst y),x*(snd y))
-
-    // Recursive function. Creates an array containing tuples of x,y-coordinates.
-    let rec compute (days : int) (r0 : float * float) (v0 : float * float) (a0 : float * float) =
-        if days >= 1 then
-            // compute r, concatentate result to array and recursive call with new values
-            let r1 = (r0 .+ v0)
-            let r0Len = sqrt (((fst r0)**2.0) + ((snd r0)**2.0))
-            let a1 = -(GMs/(r0Len**3.0)) .* r0
-            let v1 = (v0 .+ a0)
-
-            Array.concat [[|r0|] ; (compute (days - 1) r1 v1 a1)]
-        else
-            // days < 1, return empty array.
-            [||]
-    let positions = compute days r0 v0 a0
-    positions
-
-// Test med begyndelsesdata fra Merkur.
-printfn "%A" (cPP 4 (0.2804392026,0.1643945659) (-0.02091908706,0.0247536421) (-0.002415813724,-0.001416159527))
