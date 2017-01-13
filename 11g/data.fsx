@@ -8,7 +8,9 @@ let opendata (filename:string) =
         let text = (readFile inputStream)
         inputStream.Close()
         let data = text.Split([|"$$SOE";"$$EOE"|], System.StringSplitOptions.None)
-        let arr = data.[1].Split([|"     ";"  "|], System.StringSplitOptions.None)
+        let arr = data.[1].Split([|'\r'|], System.StringSplitOptions.None)
         arr
     else
         failwith "the file could not be found!"
+
+printfn "%A" (opendata "Mercury.txt")
