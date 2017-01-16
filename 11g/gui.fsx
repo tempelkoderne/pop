@@ -25,12 +25,19 @@ type planet(name:string, color:Color, radius:int, day0:vector []) =
         let v0 = v
         let a0 = a
 
-        let r1:vector = (r0 .+ v0)
-        let r0Len = sqrt (((fst r0)**2.0) + ((snd r0)**2.0))
-        let a1:vector = -(GMs/(r0Len**3.0)) .* r0
-        let v1:vector = (v0 .+ a0)
-        let (positions:vector []) = [|r1;v1;a1|]
-        positions
+        if r0 = (0.0, 0.0) then
+            let r1:vector = (0.0, 0.0)
+            let v1:vector = (0.0, 0.0)
+            let a1:vector = (0.0, 0.0)
+            let (positions:vector []) = [|r1;v1;a1|]
+            positions
+        else
+            let r1:vector = (r0 .+ v0)
+            let r0Len = sqrt (((fst r0)**2.0) + ((snd r0)**2.0))
+            let a1:vector = -(GMs/(r0Len**3.0)) .* r0
+            let v1:vector = (v0 .+ a0)
+            let (positions:vector []) = [|r1;v1;a1|]
+            positions
     
     member self.name = name
     member self.color = color
