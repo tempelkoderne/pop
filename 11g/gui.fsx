@@ -1,57 +1,145 @@
 open System.Windows.Forms
 open System.Drawing
 
-type coord = (float * float)
-type path = coord list
-type planet = (Color * int)
-// type planets = planet * path list
+type vector = (float * float)
 
-// convert to pixel coords
-let toPx (x:coord) = (log10((fst x) + 100.0) * 100.0, log10((snd x) + 100.0) * 100.0)
-let ofPx (x:coord) = (10.0**((fst x)/100.0) - 100.0, 10.0**((fst x)/100.0) - 100.0)
+// helpers
+let toPx (x:vector) = (log10((fst x) + 100.0) * 100.0, log10((snd x) + 100.0) * 100.0)
+let ofPx (x:vector) = (10.0**((fst x)/100.0) - 100.0, 10.0**((fst x)/100.0) - 100.0)
+let scaleUp (x:vector) = (300.0 * (fst x), 300.0 * (snd x))
+let scaleDown (x:vector) = ((fst x)/300.0, (snd x)/300.0)
+let offset (r:int) (x:vector) = ((float r) + (fst x), (float r) + (snd x))
 
-let scaleUp (x:coord) = (1000.0 * (fst x), 1000.0 * (snd x))
-let scaleDown (x:coord) = ((fst x)/1000.0, (snd x)/1000.0)
+let ( .+ ) (x:vector) (y:vector) = ((fst x + fst y), (snd x + snd y))
+let ( .- ) (x:vector) (y:vector) = ((fst x - fst y), (snd x - snd y))
+let ( .* ) (x:float) (y:vector) = (x * (fst y), x * (snd y))
 
-let offset (r:int) (x:coord) = ((float r) + (fst x), (float r) + (snd x))
 
-let ( .+ ) x y = ((fst x + fst y),(snd x + snd y))
-let ( .* ) x y = (x*(fst y),x*(snd y))
+// builds planets
+type planet(name:string, color:Color, radius:int, day0:vector []) =
+    let mutable state = day0 // add function computing day0 from dataset
+    let mutable r, v, a = day0.[0], day0.[1], day0.[2] 
+    let nextPos (r:vector) (v:vector) (a:vector) =
+        let GMs = 2.959122082322128e-4
+        let r0 = r
+        let v0 = v
+        let a0 = a
 
-let mutable day = 0
+        let r1:vector = (r0 .+ v0)
+        let r0Len = sqrt (((fst r0)**2.0) + ((snd r0)**2.0))
+        let a1:vector = -(GMs/(r0Len**3.0)) .* r0
+        let v1:vector = (v0 .+ a0)
+        let (positions:vector []) = [|r1;v1;a1|]
+        positions
+    
+    member self.name = name
+    member self.color = color
+    member self.radius = radius
+    member self.vectors = state
+    
+    member self.Move() =
+        state <- nextPos r v a
+        r <- state.[0]
+        v <- state.[1]
+        a <- state.[2]        
+    member self.DrawFunc(e:PaintEventArgs) =
+        let x, y = toPx r
+        let brush = new SolidBrush(self.color)
+        let shape = new Rectangle(Point(int(round x), int(round y)),
+                                  Size(self.radius, self.radius))
+        e.Graphics.FillEllipse(brush, shape)
 
-// compute next position
-let CNPP (data : coord []) =
-    let GMs = 2.959122082322128e-4
-    let r0 = data.[0]
-    let v0 = data.[1]
-    let a0 = data.[2]
-    day <- day + 1
-    printfn "DAY NUMBER %A" day
-    let r1 = (r0 .+ v0)
-    printfn "r1: %A" r1
-    let r0Len = sqrt (((fst r0)**2.0) + ((snd r0)**2.0))
-    printfn "r0len: %A" r0Len
-    let a1 = -(GMs/(r0Len**3.0)) .* r0
-    printfn "a1: %A" a1
-    let v1 = (v0 .+ a0)
-    printfn "v1: %A" v1
-    let positions = [|r1;v1;a1|]
-    printfn "positions: %A" positions
-    positions
+// builds worlds
+type world(bcolor:Color, width:int, height:int, title:string, planets:planet list) =
+    let mutable space = new Form()
+    // let timer = new Timer(Interval = 100,
+    //                       Enabled = true)
+    // timer.Tick.Add self.UpdateWorld()
+    
+    member self.name = title
+    member self.dims = Size (Point (width, height))
+    member self.background = bcolor
+    member self.system = space
+
+    member self.BigBang() =
+        space <- new Form(Text = self.name,
+                          BackColor = self.background,
+                          ClientSize = self.dims)
+        for pl in planets do
+            space.Paint.Add (pl.DrawFunc)
+
+    member self.UpdateWorld() =
+        for pl in planets do
+            pl.Move()
+        space.Refresh()
+
+// create planet instances
+let mars0 = [|(-0.1666759033, 0.969084551);
+             (-0.0008611603679, -0.012730565);
+             (0.0001071860543, -1.106261002e-05)|]
+let mars = planet("Mars", Color.Red, 30, mars0)
+
+let earth0 = [|(-0.1666759033, 0.969084551);
+              (-0.01720978776, -0.003125375992);
+              (5.187516652e-05, -0.0003016118194)|]
+let earth = planet("Earth", Color.Blue, 60, earth0)
+
+let planets = [earth; mars]
+
+// create solar system
+let solar = world(Color.Black, 600, 600, "Solar System", planets)
+solar.BigBang()
+
+// create time
+let timer = new Timer(Interval = 100,
+                      Enabled = true)
+timer.Tick.Add (fun showtime -> solar.UpdateWorld())
+
+// let there be light
+Application.Run solar.system
+
+
+//////////////////////////
+/////(* DEPRECATED *)/////
+//////////////////////////
+
+(*
+// god config
+let earth = (Color.Blue, 50)
+let size = (700,700)
+let cntr = (0.5 * float (fst size), 0.5* float (snd size))
+let bcolor:Color = Color.Black
+let title:string = "Solar System"
+
+let mutable r0:vector = cntr .+ (scaleUp (-0.1666759033, 0.969084551))
+let mutable v0:vector = (-0.01720978776, -0.003125375992)
+let mutable a0:vector = (5.187516652e-05, -0.0003016118194)
+
+// calc next position
+let nextPos (r:vector) (v:vector) (a:vector) =
+        let GMs = 2.959122082322128e-4
+        let r0 = r
+        let v0 = v
+        let a0 = a
+
+        let r1:vector = (r0 .+ v0)
+        let r0Len = sqrt (((fst r0)**2.0) + ((snd r0)**2.0))
+        let a1:vector = -(GMs/(r0Len**3.0)) .* r0
+        let v1:vector = (v0 .+ a0)
+        let (positions:vector []) = [|r1;v1;a1|]
+        positions
 
 // create world
-let bigBang backColor (width, height) title draw =
-    let win = new Form ()
-    win.Text <- title
-    win.BackColor <- backColor
-    win.ClientSize <- Size (width, height)
-    win.Paint.Add draw
-    win
+let bigBang (backColor:Color) (size:int*int) (title:string) (drawFunc:PaintEventArgs -> unit) =
+    let world = new Form(Text = title,
+                       BackColor = backColor,
+                       ClientSize = Size (Point ((fst size), (snd size))))
+    world.Paint.Add drawFunc
+    world
 
 // draw planets
-let drawPlanet (pos:coord byref) (pl:planet) (e:PaintEventArgs) =
-    let x, y = toPx pos
+let drawPlanet (r:vector byref) (pl:Color*int) (e:PaintEventArgs) =
+    let x, y = toPx r
     // let trans_x, trans_y = toPx x + 300.0, toPx y + 300.0
     let color, radius = pl
     let brush = new SolidBrush (color)
@@ -59,34 +147,22 @@ let drawPlanet (pos:coord byref) (pl:planet) (e:PaintEventArgs) =
                               Size(radius, radius))
     e.Graphics.FillEllipse (brush, shape)
 
-// god config
-let mutable p0 = scaleUp (-0.1666759033, 0.969084551)
-let mutable v0 = scaleUp (-0.01720978776, -0.003125375992)
-let mutable a0 = scaleUp (5.187516652e-05, -0.0003016118194)
-
-let earth:planet = (Color.Blue, 50)
-let size:(int*int) = (700,700)
-let bcolor:Color = Color.Black
-let title:string = "Solar System"
-let solar = bigBang bcolor size title (drawPlanet &p0 earth)
-
 // move planets
-let updateWorld (world:Form) (p:coord byref) (v:coord byref) (a:coord byref) showtime =
-    let state = CNPP [|scaleDown p; scaleDown v; scaleDown a|]
-    p <- scaleUp state.[0]
-    v <- scaleUp state.[1]
-    a <- scaleUp state.[2]
-    printfn "SCALED STATE: %A" state
-    // printfn "%A" state
+let updateWorld (world:Form) (r:vector byref) (v:vector byref) (a:vector byref) showtime =
+    let state = nextPos (scaleDown (r .- cntr)) v a
+    r <- cntr .+ (scaleUp state.[0])
+    v <- state.[1]
+    a <- state.[2]
     world.Refresh()
 
+// build world
+let solar = bigBang bcolor size title (drawPlanet &r0 (Color.Blue, 60))
 
-// setup timer
+// add timer events
 let timer = new Timer(Interval = 10,
                       Enabled = true)
-timer.Tick.Add (updateWorld solar &p0 &v0 &a0)
+timer.Tick.Add (updateWorld solar &r0 &v0 &a0)
 
 // run system
 Application.Run solar
-
-
+*)
