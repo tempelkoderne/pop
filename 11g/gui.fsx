@@ -67,14 +67,13 @@ type world(bcolor:Color, width:int, height:int, title:string, planets:planet lis
                           ClientSize = self.dims)
         for pl in planets do
             space.Paint.Add (pl.DrawFunc)
-
     member self.UpdateWorld() =
         for pl in planets do
             pl.Move()
         space.Refresh()
 
 // create planet instances
-let mars0 = [|(-0.1666759033, 0.969084551);
+let mars0 = [|(-1.648393944, 0.1701297755);
              (-0.0008611603679, -0.012730565);
              (0.0001071860543, -1.106261002e-05)|]
 let mars = planet("Mars", Color.Red, 30, mars0)
@@ -84,7 +83,12 @@ let earth0 = [|(-0.1666759033, 0.969084551);
               (5.187516652e-05, -0.0003016118194)|]
 let earth = planet("Earth", Color.Blue, 60, earth0)
 
-let planets = [earth; mars]
+let sun0 = [|(300.0, 300.0);
+            (0.0, 0.0);
+            (0.0, 0.0)|]
+let sun = planet("Sun", Color.Yellow, 10, sun0)
+
+let planets = [earth; mars; sun]
 
 // create solar system
 let solar = world(Color.Black, 600, 600, "Solar System", planets)
