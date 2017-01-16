@@ -6,8 +6,8 @@ type vector = (float * float)
 // helpers
 let toPx (x:vector) = (log10((fst x) + 100.0) * 100.0, log10((snd x) + 100.0) * 100.0)
 let ofPx (x:vector) = (10.0**((fst x)/100.0) - 100.0, 10.0**((fst x)/100.0) - 100.0)
-let scaleUp (x:vector) = (300.0 * (fst x), 300.0 * (snd x))
-let scaleDown (x:vector) = ((fst x)/300.0, (snd x)/300.0)
+let scaleUp (x:vector) = (100.0 * (fst x), 100.0 * (snd x))
+let scaleDown (x:vector) = ((fst x)/100.0, (snd x)/100.0)
 let offset (r:int) (x:vector) = ((float r) + (fst x), (float r) + (snd x))
 
 let ( .+ ) (x:vector) (y:vector) = ((fst x + fst y), (snd x + snd y))
@@ -43,7 +43,7 @@ type planet(name:string, color:Color, radius:int, day0:vector []) =
         v <- state.[1]
         a <- state.[2]        
     member self.DrawFunc(e:PaintEventArgs) =
-        let x, y = toPx r
+        let x, y = offset 300 (scaleUp r)
         let brush = new SolidBrush(self.color)
         let shape = new Rectangle(Point(int(round x), int(round y)),
                                   Size(self.radius, self.radius))
@@ -83,10 +83,10 @@ let earth0 = [|(-0.1666759033, 0.969084551);
               (5.187516652e-05, -0.0003016118194)|]
 let earth = planet("Earth", Color.Blue, 60, earth0)
 
-let sun0 = [|(300.0, 300.0);
+let sun0 = [|(0.0, 0.0);
             (0.0, 0.0);
             (0.0, 0.0)|]
-let sun = planet("Sun", Color.Yellow, 10, sun0)
+let sun = planet("Sun", Color.Yellow, 20, sun0)
 
 let planets = [earth; mars; sun]
 
