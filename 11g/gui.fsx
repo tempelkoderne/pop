@@ -4,8 +4,8 @@ open System.Drawing
 type vector = (float * float)
 
 // helpers
-let toPx (x:vector) = (log10((fst x) + 100.0) * 100.0, log10((snd x) + 100.0) * 100.0)
-let ofPx (x:vector) = (10.0**((fst x)/100.0) - 100.0, 10.0**((fst x)/100.0) - 100.0)
+let toPx (x:vector) = (log10((fst x) + 1.0) * 100.0, log10((snd x) + 1.0) * 100.0)
+let ofPx (x:vector) = (10.0**((fst x)/100.0) - 1.0, 10.0**((fst x)/100.0) - 1.0)
 let scaleUp (x:vector) = (100.0 * (fst x), 100.0 * (snd x))
 let scaleDown (x:vector) = ((fst x)/100.0, (snd x)/100.0)
 let offset (r:int) (x:vector) = ((float r) + (fst x), (float r) + (snd x))
@@ -41,7 +41,7 @@ type planet(name:string, color:Color, radius:int, day0:vector []) =
         state <- nextPos r v a
         r <- state.[0]
         v <- state.[1]
-        a <- state.[2]        
+        a <- state.[2]
     member self.DrawFunc(e:PaintEventArgs) =
         let x, y = offset 300 (scaleUp r)
         let brush = new SolidBrush(self.color)
@@ -76,12 +76,12 @@ type world(bcolor:Color, width:int, height:int, title:string, planets:planet lis
 let mars0 = [|(-1.648393944, 0.1701297755);
              (-0.0008611603679, -0.012730565);
              (0.0001071860543, -1.106261002e-05)|]
-let mars = planet("Mars", Color.Red, 30, mars0)
+let mars = planet("Mars", Color.Red, 20, mars0)
 
 let earth0 = [|(-0.1666759033, 0.969084551);
               (-0.01720978776, -0.003125375992);
               (5.187516652e-05, -0.0003016118194)|]
-let earth = planet("Earth", Color.Blue, 60, earth0)
+let earth = planet("Earth", Color.Blue, 20, earth0)
 
 let sun0 = [|(0.0, 0.0);
             (0.0, 0.0);
