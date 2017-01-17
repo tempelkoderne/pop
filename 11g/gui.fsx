@@ -1,19 +1,12 @@
 // TODO:
 // 1) add hardcoded Sun to type world
-// 2) add day0-reader to type planet
-//      > Add new class : dataTools containing readData, convertData and CIV.
-//      > Have planet and world inherit from dataTools class.
-//      > Modify planet class to load from file rather than having initial vectors given as argument. 
-// 3) add simulated data reader to planet maps in type world
-//      > Add new map : simData to world.
-//      > Modify world to overwrite simData for every planet at every UpdateWorld call.  
-// 4) build euclidian-distance comparison tool for simulated vs empirical data in type world
-// 5) (OPTIONAL) consider making offset a function of window size
-// 6) move helper functions to separate .fs file
-// 7) update UML-diagram
-// 8) produce brief report
-// 9) document code and implement black box testing
-
+// 2) add simulated data reader to planet maps in type world
+// 3) build euclidian-distance comparison tool for simulated vs empirical data in type world
+// 4) (OPTIONAL) consider making offset a function of window size
+// 5) move helper functions to separate .fs file
+// 6) update UML-diagram
+// 7) produce brief report
+// 8) document code and implement black box testing
 
 open System.Windows.Forms
 open System.Drawing
@@ -251,5 +244,3 @@ timer.Tick.Add (updateWorld solar &r0 &v0 &a0)
 // run system
 Application.Run solar
 *)
-// solar.LoadData()
-printfn "%A" earth.vectors
