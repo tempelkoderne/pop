@@ -15,17 +15,7 @@ type Planet(name:string, color:Color, radius:int) =
     let mutable r, v, a = state.[0], state.[1], state.[2] 
     let nextPos (r:vector) (v:vector) (a:vector) =
         let GMs = 2.959122082322128e-4
-        let r0 = r
-        let v0 = v
-        let a0 = a
-
-        // if r0 = (0.0, 0.0) then
-        //     let r1:vector = (0.0, 0.0)
-        //     let v1:vector = (0.0, 0.0)
-        //     let a1:vector = (0.0, 0.0)
-        //     let (positions:vector []) = [|r1;v1;a1|]
-        //     positions
-        // else
+        let r0, v0, a0 = r, v, a
         let r1:vector = (r0 .+ v0)
         let r0Len = sqrt (((fst r0)**2.0) + ((snd r0)**2.0))
         let a1:vector = -(GMs/(r0Len**3.0)) .* r0
