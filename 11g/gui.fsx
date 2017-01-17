@@ -2,6 +2,7 @@
 // 1) (OPTIONAL) consider making offset a function of window size
 // 2) produce brief report
 // 3) document code and implement black box testing
+// 4) print table of average error distances per planet over time
 
 (*OBS! Programmet køres med fsharpi -r pop11g.dll gui.fsx*)
 
