@@ -25,10 +25,68 @@ let ( .+ ) (x:vector) (y:vector) = ((fst x + fst y), (snd x + snd y))
 let ( .- ) (x:vector) (y:vector) = ((fst x - fst y), (snd x - snd y))
 let ( .* ) (x:float) (y:vector) = (x * (fst y), x * (snd y))
 
+
+// reads data
+type DataReader() =
+    member self.inputDay() =
+        let rec inputDay() =
+            printfn "How many days would you like to simulate?"
+            try
+                int (System.Console.ReadLine())
+            with
+                | _ -> inputDay()
+        inputDay()
+
+    member self.loadData(planet:string, days:int) =
+        let plusDays = min days 365 // only relevant for type world
+        let stop = 2457388 + (int plusDays)
+        
+        if System.IO.File.Exists ("data/" + planet + ".txt") then
+            let readFile (stream:System.IO.StreamReader) = stream.ReadToEnd()
+            let inputStream = System.IO.File.OpenText ("data/" + planet + ".txt")
+            let text = (readFile inputStream)
+            inputStream.Close()
+            
+            let data = text.Split([|"2457387.500000000";(stop.ToString())|],
+                                  System.StringSplitOptions.None) // Splits text at 01 jan and x days ahead.
+            let entries = data.[1].Split([|'\r'|], System.StringSplitOptions.None)
+            
+
+            let sliceOnce = (entries.[1..(entries.Length - 2)])
+            let mutable sliceTwice = Array.create (sliceOnce.Length) (0.0,0.0)
+            for i = 0 to sliceOnce.Length - 1 do
+                let degToRad (deg : float) = (deg) * (System.Math.PI)/180.0
+                let longDeg = float ((sliceOnce.[i]).[22..29]) // x, longtitude
+                let latDeg = float ((sliceOnce.[i]).[31..38]) // y, latitude
+                let rad = float ((sliceOnce.[i]).[40..54]) // radius
+                let long = (degToRad longDeg)
+                let lat = (degToRad (latDeg + 90.0))
+                let x = (rad) * System.Math.Sin(lat) * System.Math.Cos(long)
+                let y = (rad) * System.Math.Sin(lat) * System.Math.Sin(long)
+                sliceTwice.[i] <- (x,y)
+            sliceTwice
+        else
+            printfn "The file %s could not be found!" (planet + ".txt")
+            [||]
+
+    member self.initVec(planet:string) =
+        let initState = self.loadData(planet, 2)
+        let GMs = 2.959122082322128e-4
+        let r0 = initState.[0]
+        let r1 = initState.[1]
+        let r0Len = sqrt (((fst r0)**2.0) + ((snd r0)**2.0))
+        let a0 = -(GMs/(r0Len**3.0)) .* r0
+        let v0 = r1 .- r0
+        let vectors = [|r0;v0;a0|]
+        vectors
+
+
 // builds planets
-type planet(name:string, color:Color, radius:int, day0:vector []) =
-    let mutable state = day0 // add function computing day0 from dataset
-    let mutable r, v, a = day0.[0], day0.[1], day0.[2] 
+type planet(name:string, color:Color, radius:int) =
+    inherit DataReader()
+    
+    let mutable state = initVec(name)
+    let mutable r, v, a = state.[0], state.[1], state.[2] 
     let nextPos (r:vector) (v:vector) (a:vector) =
         let GMs = 2.959122082322128e-4
         let r0 = r
@@ -68,43 +126,8 @@ type planet(name:string, color:Color, radius:int, day0:vector []) =
 
 // builds worlds
 type world(bcolor:Color, width:int, height:int, title:string, planets:planet list) =
-    let rec inputDay() =
-       printfn "%A" "How many days would you like to simulate?"
-       try
-           int(System.Console.ReadLine())
-       with
-           | _ -> inputDay()    
-    let readData (filename : string, days:int) =
-        let plusDays = min days 365
-        let stop = (2457388 + (int plusDays) + 1)
-        let file = filename + ".txt"
-        if System.IO.File.Exists ("data/" + file) then
-            let readFile (stream:System.IO.StreamReader) = stream.ReadToEnd()
-            let inputStream = System.IO.File.OpenText ("data/" + file)
-            let text = (readFile inputStream)
-            inputStream.Close()
-            let data = text.Split([|"2457387.500000000"; (stop.ToString())|],
-                                  System.StringSplitOptions.None)
-            let entries = data.[1].Split([|'\r'|], System.StringSplitOptions.None)
-            entries
-        else
-            printfn "The file %s could not be found! Returning empty array." file
-            let entries = [||]
-            entries
-    let convertData (data : string []) =
-        let sliceOnce = (data.[1..(data.Length - 2)])
-        let mutable sliceTwice = Array.create (sliceOnce.Length) (0.0,0.0)
-        for i = 0 to sliceOnce.Length - 1 do
-            let degToRad (deg : float) = (deg) * (System.Math.PI)/180.0
-            let longDeg = float ((sliceOnce.[i]).[22..29]) // x, longtitude
-            let latDeg = float ((sliceOnce.[i]).[31..38]) // y, latitude
-            let rad = float ((sliceOnce.[i]).[40..54]) // radius
-            let long = (degToRad longDeg)
-            let lat = (degToRad (latDeg + 90.0))
-            let x = (rad) * System.Math.Sin(lat) * System.Math.Cos(long)
-            let y = (rad) * System.Math.Sin(lat) * System.Math.Sin(long)
-            sliceTwice.[i] <- (x,y)
-        sliceTwice
+    inherit DataReader()
+
     let mutable dataMap = Map.empty
     let mutable space = new Form()
 
@@ -127,28 +150,18 @@ type world(bcolor:Color, width:int, height:int, title:string, planets:planet lis
     member self.LoadData() =
         let days = inputDay()
         for pl in planets do
-            let data = readData("Mars", days) |> convertData
+            let data = loadData("Mars", days)
             dataMap <- dataMap.Add (pl.name, data)
-
-            // dataMap.Add ((pl.name, x))
-            // dataMap.Add (pl.name, ) |> ignore
 
 
 // create planet instances
-let mars0 = [|(-1.648393944, 0.1701297755);
-             (-0.0008611603679, -0.012730565);
-             (0.0001071860543, -1.106261002e-05)|]
-let mars = planet("Mars", Color.Red, 20, mars0)
+let mars = planet("Mars", Color.Red, 20)
+let earth = planet("Earth", Color.Blue, 20)
 
-let earth0 = [|(-0.1666759033, 0.969084551);
-              (-0.01720978776, -0.003125375992);
-              (5.187516652e-05, -0.0003016118194)|]
-let earth = planet("Earth", Color.Blue, 20, earth0)
-
-let sun0 = [|(0.0, 0.0);
-            (0.0, 0.0);
-            (0.0, 0.0)|]
-let sun = planet("Sun", Color.Yellow, 20, sun0)
+// let sun0 = [|(0.0, 0.0);
+//             (0.0, 0.0);
+//             (0.0, 0.0)|]
+// let sun = planet("Sun", Color.Yellow, 20)
 
 let planets = [earth; mars]
 
