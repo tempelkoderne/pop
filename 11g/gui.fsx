@@ -37,7 +37,7 @@ type DataReader() =
         inputDay()
 
     member self.loadData(planet:string, days:int) =
-        let plusDays = min days 365 // only relevant for type world
+        let plusDays = min days 365 // since start is always 1/1/16
         let stop = 2457388 + (int plusDays)
         
         if System.IO.File.Exists ("data/" + planet + ".txt") then
@@ -45,12 +45,10 @@ type DataReader() =
             let inputStream = System.IO.File.OpenText ("data/" + planet + ".txt")
             let text = (readFile inputStream)
             inputStream.Close()
-            
             let data = text.Split([|"2457387.500000000";(stop.ToString())|],
-                                  System.StringSplitOptions.None) // Splits text at 01 jan and x days ahead.
-            let entries = data.[1].Split([|'\r'|], System.StringSplitOptions.None)
-            
-
+                                  System.StringSplitOptions.None)
+            let entries = data.[1].Split([|'\r'|],
+                                         System.StringSplitOptions.None)
             let sliceOnce = (entries.[1..(entries.Length - 2)])
             let mutable sliceTwice = Array.create (sliceOnce.Length) (0.0,0.0)
             for i = 0 to sliceOnce.Length - 1 do
@@ -67,7 +65,6 @@ type DataReader() =
         else
             printfn "The file %s could not be found!" (planet + ".txt")
             [||]
-
     member self.initVec(planet:string) =
         let initState = self.loadData(planet, 2)
         let GMs = 2.959122082322128e-4
@@ -78,13 +75,27 @@ type DataReader() =
         let v0 = r1 .- r0
         let vectors = [|r0;v0;a0|]
         vectors
-
-
+    member self.calcData(planet:string, days:int) =
+        let GMs = 2.959122082322128e-4
+        let state0 = self.initVec(planet)
+        let rec compute (days:int) (state0:(float*float) []) =
+            if days > 0 then
+                let r1 = (state0.[0] .+ state0.[1])
+                let r0Len = sqrt(((fst state0.[0])**2.0) + ((snd state0.[0])**2.0))
+                let a1 = -(GMs/(r0Len**3.0)) .* state0.[0]
+                let v1 = (state0.[1] .+ state0.[2])
+                let state1 = [|r1;v1;a1|]
+                
+                Array.concat [[|state0.[0]|]; (compute (days-1) state1)]
+            else
+                [||]
+        compute days state0
+        
 // builds planets
-type planet(name:string, color:Color, radius:int) =
+type Planet(name:string, color:Color, radius:int) =
     inherit DataReader()
     
-    let mutable state = initVec(name)
+    let mutable state = base.initVec(name)
     let mutable r, v, a = state.[0], state.[1], state.[2] 
     let nextPos (r:vector) (v:vector) (a:vector) =
         let GMs = 2.959122082322128e-4
@@ -124,17 +135,21 @@ type planet(name:string, color:Color, radius:int) =
         e.Graphics.FillEllipse(brush, shape)
 
 // builds worlds
-type world(bcolor:Color, width:int, height:int, title:string, planets:planet list) =
+type World(bcolor:Color, width:int, height:int, title:string, planets:Planet list) =
     inherit DataReader()
 
-    let mutable dataMap = Map.empty
+    let mutable obsDataMap = Map.empty
+    let mutable simDataMap = Map.empty
+    let mutable errorMap = Map.empty
     let mutable space = new Form()
 
     member self.name = title
     member self.dims = Size (Point (width, height))
     member self.background = bcolor
     member self.system = space
-    member self.data = dataMap
+    member self.obsData = obsDataMap
+    member self.simData = simDataMap
+    member self.dError = errorMap
 
     member self.BigBang() =
         space <- new Form(Text = self.name,
@@ -147,25 +162,36 @@ type world(bcolor:Color, width:int, height:int, title:string, planets:planet lis
             pl.Move()
         space.Refresh()
     member self.LoadData() =
-        let days = inputDay()
+        let days = base.inputDay()
         for pl in planets do
-            let data = loadData("Mars", days)
-            dataMap <- dataMap.Add (pl.name, data)
+            obsDataMap <- obsDataMap.Add (pl.name,
+                                          (base.loadData(pl.name, days)))
+            simDataMap <- simDataMap.Add (pl.name,
+                                          (base.calcData(pl.name, days)))
 
 
 // create planet instances
-let mars = planet("Mars", Color.Red, 20)
-let earth = planet("Earth", Color.Blue, 20)
+let mars = Planet("Mars", Color.Red, 20)
+let earth = Planet("Earth", Color.Blue, 20)
+
 
 // let sun0 = [|(0.0, 0.0);
 //             (0.0, 0.0);
 //             (0.0, 0.0)|]
 // let sun = planet("Sun", Color.Yellow, 20)
 
-let planets = [earth; mars]
+let planets = [Planet("Mercury", Color.Brown, 23);
+               Planet("Venus", Color.Orange, 60);
+               Planet("Earth", Color.Blue, 64);
+               Planet("Mars", Color.Red, 34);
+               Planet("Jupiter", Color.Gray, 700);
+               Planet("Saturn", Color.Yellow, 58);
+               Planet("Uranus", Color.LightBlue, 25);
+               Planet("Neptune", Color.Blue, 25);
+               Planet("Pluto", Color.LightSlateGray, 1)]
 
 // create solar system
-let solar = world(Color.Black, 600, 600, "Solar System", planets)
+let solar = World(Color.Black, 600, 600, "Solar System", planets)
 solar.BigBang()
 
 // create time
