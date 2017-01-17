@@ -1,13 +1,43 @@
 module Pop11g
+open System
+open System.Windows.Forms
+open System.Drawing
 
 (*OBS! .dll filen compiles via fsharpc -a pop11g.fs*)
 
 type vector = (float * float)
 
+// Zoom knapper
+let mutable zoom = 10.0
+let Zibutton = new Button()
+Zibutton.Size <- new Size (100, 40)
+Zibutton.Location <- new Point (20,20)
+Zibutton.Text <- "Zoom in"
+Zibutton.BackColor <- Color.White
+let ZibuttonClicked (e: EventArgs) =
+    if zoom >= 0.0 then
+        zoom <- zoom + 5.0
+    else
+        zoom <- zoom
+Zibutton.Click.Add ZibuttonClicked
+
+let Zobutton = new Button()
+Zobutton.Size <- new Size (100, 40)
+Zobutton.Location <- new Point (20,65)
+Zobutton.Text <- "Zoom out"
+Zobutton.BackColor <- Color.White
+let ZobuttonClicked (e: EventArgs) =
+    if zoom > 5.0 then
+        zoom <- zoom - 5.0
+    else 
+        zoom <- zoom
+Zobutton.Click.Add ZobuttonClicked
+
+
 // helpers
 let toPx (x:vector) = (log10((fst x) + 1.0) * 100.0, log10((snd x) + 1.0) * 100.0)
 let ofPx (x:vector) = (10.0**((fst x)/100.0) - 1.0, 10.0**((fst x)/100.0) - 1.0)
-let scaleUp (x:vector) = (100.0 * (fst x), 100.0 * (snd x))
+let scaleUp (x:vector) = ((zoom) * (fst x), (zoom) * (snd x))
 let scaleDown (x:vector) = ((fst x)/100.0, (snd x)/100.0)
 let offset (r:int) (x:vector) = ((float r) + (fst x), (float r) + (snd x))
 

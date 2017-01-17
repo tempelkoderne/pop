@@ -65,7 +65,7 @@ type World(bcolor:Color, width:int, height:int, title:string, planets:Planet lis
         let drawSun(e:PaintEventArgs) =
             let brush = new SolidBrush(Color.Yellow)
             let shape = new Rectangle(Point(300, 300),
-                                      Size(10, 10))
+                                      Size(20, 20))
             e.Graphics.FillEllipse(brush, shape)
         space.Paint.Add (drawSun)
     member self.UpdateWorld() =
@@ -88,15 +88,15 @@ type World(bcolor:Color, width:int, height:int, title:string, planets:Planet lis
 let mars = Planet("Mars", Color.Red, 20)
 let earth = Planet("Earth", Color.Blue, 20)
 
-let planets = [Planet("Mercury", Color.Brown, 23);
-               Planet("Venus", Color.Orange, 60);
-               Planet("Earth", Color.Blue, 64);
-               Planet("Mars", Color.Red, 34);
-               Planet("Jupiter", Color.Gray, 70);
-               Planet("Saturn", Color.Yellow, 58);
-               Planet("Uranus", Color.LightBlue, 25);
-               Planet("Neptune", Color.Blue, 25);
-               Planet("Pluto", Color.LightSlateGray, 10)]
+let planets = [Planet("Mercury", Color.Brown, 5);
+               Planet("Venus", Color.Orange, 10);
+               Planet("Earth", Color.Blue, 10);
+               Planet("Mars", Color.Red, 6);
+               Planet("Jupiter", Color.Gray, 15);
+               Planet("Saturn", Color.Yellow, 11);
+               Planet("Uranus", Color.LightBlue, 11);
+               Planet("Neptune", Color.Blue, 11);
+               Planet("Pluto", Color.LightSlateGray, 4)]
 
 // create solar system
 let solar = World(Color.Black, 600, 600, "Solar System", planets)
@@ -107,8 +107,12 @@ let timer = new Timer(Interval = 100,
                       Enabled = true)
 timer.Tick.Add (fun showtime -> solar.UpdateWorld())
 
+//Add the buttons
+solar.system.Controls.Add Zibutton
+solar.system.Controls.Add Zobutton
+
 // let there be light
-// Application.Run solar.system
+Application.Run solar.system
 
 // initiates comparison of observed and simulated data
 solar.LoadData()
