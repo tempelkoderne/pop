@@ -157,6 +157,12 @@ type World(bcolor:Color, width:int, height:int, title:string, planets:Planet lis
                           ClientSize = self.dims)
         for pl in planets do
             space.Paint.Add (pl.DrawFunc)
+        let drawSun(e:PaintEventArgs) =
+            let brush = new SolidBrush(Color.Yellow)
+            let shape = new Rectangle(Point(300, 300),
+                                      Size(10, 10))
+            e.Graphics.FillEllipse(brush, shape)
+        space.Paint.Add (drawSun)
     member self.UpdateWorld() =
         for pl in planets do
             pl.Move()
