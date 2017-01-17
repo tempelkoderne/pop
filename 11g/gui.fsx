@@ -1,12 +1,9 @@
 // TODO:
-// 1) add hardcoded Sun to type world
-// 2) add simulated data reader to planet maps in type world
-// 3) build euclidian-distance comparison tool for simulated vs empirical data in type world
-// 4) (OPTIONAL) consider making offset a function of window size
-// 5) move helper functions to separate .fs file
-// 6) update UML-diagram
-// 7) produce brief report
-// 8) document code and implement black box testing
+// 1) (OPTIONAL) consider making offset a function of window size
+// 2) move helper functions to separate .fs file
+// 3) update UML-diagram
+// 4) produce brief report
+// 5) document code and implement black box testing
 
 open System.Windows.Forms
 open System.Drawing
@@ -177,7 +174,6 @@ type World(bcolor:Color, width:int, height:int, title:string, planets:Planet lis
             let compLenVec = Array.map2 (fun x y -> x .- y) simDataMap.[pl.name] obsDataMap.[pl.name]
             let compDist = Array.map (fun x -> sqrt (((fst x)**2.0) + ((snd x)**2.0))) compLenVec
             errorMap <- errorMap.Add (pl.name, compDist)
-        printfn "%A" errorMap
 
 
 // create planet instances
