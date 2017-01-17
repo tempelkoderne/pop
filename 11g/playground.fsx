@@ -1,12 +1,36 @@
 // Bare en legeplads til at afprøve småting i.
 
-let nasaData =
-    Map.empty. (* Start with empty Map *)
-        Add("Mercury", [|(0.2804392026, 0.1643945659); (0.2595201155, 0.189148208);   (0.2362878175, 0.2122137328); (0.2108771365, 0.2333201278);   (0.1834636653, 0.2522086167); (0.1542639569, 0.2686398458); (0.1235334831, 0.2824022143); (0.09155982363, 0.2933209154); (0.05865736353, 0.30126345); (0.02515893155, 0.3061448727); (-0.008594283697, 0.3079304349); (-0.04226234891, 0.3066358309); (-0.07551544614, 0.3023251232); (-0.1080432229, 0.2951063199); (-0.1395617302, 0.2851252562); (-0.1698163456, 0.2725593904); (-0.1985875175, 0.2576096948); (-0.2256911041, 0.2404930193); (-0.2509767126, 0.2214370645); (-0.2743284001, 0.200672179); (-0.2956607826, 0.1784278945)|]).
-        Add("Sun", [|(0.0,0.0)|])
-// En ulempe, at map ikke er mutable?
-let nasaData2 = (Map.add "Earth" [||] nasaData)
+type vector = float * float
+let ( .- ) (x:vector) (y:vector) = ((fst x - fst y), (snd x - snd y))
 
-printfn "%A" (nasaData.["Mercury"])
-printfn "%A" (Map.tryFind "Earth" nasaData)
-printfn "%A" (Map.tryFind "Earth" nasaData2)
+module Map =
+    let keys (m: Map<'Key, 'T>) =
+        Map.fold (fun keys key _ -> key::keys) [] m
+
+let mutable simDataMap = Map.empty
+simDataMap <- simDataMap.Add ("Mercury", [|(0.2, 0.1); (0.2, 0.1)|])
+simDataMap <- simDataMap.Add ("Earth", [|(0.9, 0.3); (0.10, 0.2)|])
+
+let mutable obsDataMap = Map.empty
+obsDataMap <- obsDataMap.Add ("Mercury", [|(0.3,0.2); (0.4,0.3)|])
+obsDataMap <- obsDataMap.Add ("Earth", [|(0.14,0.12); (0.15,0.1)|])
+
+let mutable errorMap = Map.empty
+
+// printfn "%A" (simData.["Mercury"])
+// printfn "%A" (Map.keys simData)
+// printfn "%A" (Map.find "Mercury" simData)
+// printfn "%A" (Map.tryFind "Mercury" obsDataMap)
+
+// Hjælpefunktion.
+let compDistError (name : string) =
+    let compLenVec = Array.map2 (fun x y -> x .- y) simDataMap.[name] obsDataMap.[name]
+    let compDist = Array.map (fun x -> sqrt (((fst x)**2.0) + ((snd x)**2.0))) compLenVec
+    errorMap <- errorMap.Add (name, compDist)
+
+// errorMap <- errorDistance.Add ( osv...
+
+compDistError "Mercury"
+compDistError "Earth"
+
+printfn "%A" errorMap

@@ -168,27 +168,25 @@ type World(bcolor:Color, width:int, height:int, title:string, planets:Planet lis
                                           (base.loadData(pl.name, days)))
             simDataMap <- simDataMap.Add (pl.name,
                                           (base.calcData(pl.name, days)))
+            let compLenVec = Array.map2 (fun x y -> x .- y) simDataMap.[pl.name] obsDataMap.[pl.name]
+            let compDist = Array.map (fun x -> sqrt (((fst x)**2.0) + ((snd x)**2.0))) compLenVec
+            errorMap <- errorMap.Add (pl.name, compDist)
+        printfn "%A" errorMap
 
 
 // create planet instances
 let mars = Planet("Mars", Color.Red, 20)
 let earth = Planet("Earth", Color.Blue, 20)
 
-
-// let sun0 = [|(0.0, 0.0);
-//             (0.0, 0.0);
-//             (0.0, 0.0)|]
-// let sun = planet("Sun", Color.Yellow, 20)
-
 let planets = [Planet("Mercury", Color.Brown, 23);
                Planet("Venus", Color.Orange, 60);
                Planet("Earth", Color.Blue, 64);
                Planet("Mars", Color.Red, 34);
-               Planet("Jupiter", Color.Gray, 700);
+               Planet("Jupiter", Color.Gray, 70);
                Planet("Saturn", Color.Yellow, 58);
                Planet("Uranus", Color.LightBlue, 25);
                Planet("Neptune", Color.Blue, 25);
-               Planet("Pluto", Color.LightSlateGray, 1)]
+               Planet("Pluto", Color.LightSlateGray, 10)]
 
 // create solar system
 let solar = World(Color.Black, 600, 600, "Solar System", planets)
@@ -201,6 +199,8 @@ timer.Tick.Add (fun showtime -> solar.UpdateWorld())
 
 // let there be light
 Application.Run solar.system
+
+solar.LoadData()
 
 
 //////////////////////////
