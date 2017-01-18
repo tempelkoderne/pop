@@ -141,7 +141,7 @@ type World(bcolor:Color, width:int, height:int, title:string, planets:Planet lis
             let avg = sum / arLen
             table <- table + (sprintf "    %-10s" (pl.name)) + (sprintf "%20s" (avg.ToString())) + "  AU\n"
         // Print table.
-        printfn "Press any key to continue.\n"
+        printfn "Press any key to show results of simulation."
         System.Console.ReadKey() |> ignore
         System.Console.Clear()
         printfn "Average distance between observed and simulated planetary positions over %A days.\n" days
@@ -174,8 +174,39 @@ solar.system.Controls.Add Zibutton
 solar.system.Controls.Add Zobutton
 
 // Initiates comparison of observed and simulated data.
-solar.Simulate()
+// solar.Simulate()
 
 // Let there be light!
 printfn "Launching graphical simulation of solar system, showing planetary movement from 01-01-2016 and indefinitely."
-Application.Run solar.system
+// Application.Run solar.system
+
+
+
+(*UNIT TESTS*)
+printfn "\nPress any key to show additional unit tests."
+System.Console.ReadKey() |> ignore
+System.Console.Clear()
+
+printfn "\nPlanet class tests:"
+printfn "- Using \"Mercury\" as example."
+printfn "    self.name   = \"Mercury\" : %b" (planets.[0].name = "Mercury")
+printfn "    self.color  = Color.Brown : %b" (planets.[0].color = (Color.Brown))
+printfn "    self.radius = 5           : %b" (planets.[0].radius = 5)
+printfn "1)  self.vectors              : %A" planets.[0].vectors
+planets.[0].Move()
+printfn "    self.Move()               : Notice difference between 1) and 2) self.vectors."
+printfn "2)  self.vectors              : %A" planets.[0].vectors
+printfn "    self.DrawFunc(e) tested previously via GUI - otherwise GUI animation would be impossible."
+
+printfn "\nWorld class tests:"
+printfn "- Using \"Mercury\" as example where needed."
+printfn "    self.name = \"Solar System\"    : %b" (solar.name = "Solar System")
+printfn "    self.dims                     : %A" solar.dims
+printfn "    self.background = Color.Black : %b" (solar.background = (Color.Black))
+printfn "    self.system                   : %A" solar.system
+printfn "    self.BigBang() tested previously via GUI - otherwise GUI would not have launched properly."
+printfn "    self.UpdateWorld() tested previously via GUI - otherwise GUI animation would be impossible."
+printfn "    self.simData                  : %A" solar.simData 
+printfn "    self.obsdata                  : %A" solar.obsData
+printfn "    self.dError                   : %A" solar.dError
+printfn "    self.Simulate() tested previously. Otherwise no comparison table would have been printed."
