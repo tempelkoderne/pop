@@ -24,11 +24,12 @@ let inputDay() =
             int (System.Console.ReadLine())
         with
             | _ -> inputDay()
-    inputDay()
+    let input = inputDay()
+    if input > 365 then printfn "Input greater than 365. Simulating 365 days."
+    min input 365
 
 let loadData(planet:string, days:int) =
-    let plusDays = min days 365 // since start is always 1/1/16
-    let stop = 2457388 + (int plusDays)
+    let stop = 2457388 + (int days)
     
     if System.IO.File.Exists ("data/" + planet + ".txt") then
         let readFile (stream:System.IO.StreamReader) = stream.ReadToEnd()
