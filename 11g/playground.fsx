@@ -1,3 +1,10 @@
+// TODO:
+// 1) produce brief report
+// 2) unit tests
+// (OPTIONAL) consider making offset a function of window size
+
+
+
 // Bare en legeplads til at afprøve småting i.
 
 type vector = float * float

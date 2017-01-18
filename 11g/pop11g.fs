@@ -3,7 +3,7 @@ open System
 open System.Windows.Forms
 open System.Drawing
 
-(*OBS! .dll filen compiles via fsharpc -a pop11g.fs*)
+(*Compile file using: fsharpc -a pop11g.fs*)
 
 type vector = (float * float)
 

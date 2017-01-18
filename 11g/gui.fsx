@@ -1,20 +1,35 @@
-// TODO:
-// 1) (OPTIONAL) consider making offset a function of window size
-// 2) produce brief report
-// 3) document code and implement black box testing
-// 4) print table of average error distances per planet over time
-
-(*OBS! Programmet køres med fsharpi -r pop11g.dll gui.fsx*)
-
 open System.Windows.Forms
 open System.Drawing
 open Pop11g
-        
-// builds planets
+
+(*Run program using: fsharpi -r pop11g.dll gui.fsx*)
+
+
+
+(* Planet *)
+///<summary>
+/// Planet class. Allows creation of planets with various attributes.
+///</summary>
+///<params name="name">
+/// String. Name of the planet. Used for various computations.
+///</params>
+///<params name="color">
+/// Color-method. Color to be used in a GUI.
+///</params>
+///<params name="radius">
+/// Integer.  Size of planet in a GUI.
+///</params>
+///<returns>
+/// A Planet-type instance.
+///</returns>
 type Planet(name:string, color:Color, radius:int) =  
-    let mutable state = initVec(name)
-    let mutable r, v, a = state.[0], state.[1], state.[2] 
-    let nextPos (r:vector) (v:vector) (a:vector) =
+    // Attributes.
+    let mutable state = initVec(name)   // State of planet. Positional vector r, as well as speed and acceleration vectors, v and a.
+    let mutable r, v, a = state.[0], state.[1], state.[2] // Extracts vectors.
+
+    // Helper function.
+    // Calculates the next position of a planet based on the previous position r, as well as the speed and acceleration, v and a.
+    let nextPos (r:vector) (v:vector) (a:vector) =        
         let GMs = 2.959122082322128e-4
         let r0, v0, a0 = r, v, a
         let r1:vector = (r0 .+ v0)
@@ -24,6 +39,7 @@ type Planet(name:string, color:Color, radius:int) =
         let (positions:vector []) = [|r1;v1;a1|]
         positions
     
+    // Methods.
     member self.name = name
     member self.color = color
     member self.radius = radius
@@ -41,13 +57,40 @@ type Planet(name:string, color:Color, radius:int) =
                                   Size(self.radius, self.radius))
         e.Graphics.FillEllipse(brush, shape)
 
-// builds worlds
+
+
+(* World *)
+///<summary>
+/// World class. Allows creation of a universe of Planet-types and continuous drawing of these in a GUI.
+///</summary>
+///<params name="bcolor">
+/// Color-method. Color of background in a GUI.
+///</params>
+///<params name="width">
+/// Integer. Initial width of window in pixels.
+///</params>
+///<params name="height">
+/// Integer. Initial height of window in pixels.
+///</params>
+///<params name="title">
+/// String. Title of a GUI window.
+///</params>
+///<params name="planets">
+/// A Planet list. The planets to be drawn in a GUI.
+///</params>
+///<returns>
+/// A World-type instance.
+///</returns>
 type World(bcolor:Color, width:int, height:int, title:string, planets:Planet list) =
+    // Attributes.
+    // Maps containing observed and simulated data, as well as map containing difference between obs and sim.
     let mutable obsDataMap = Map.empty
     let mutable simDataMap = Map.empty
     let mutable errorMap = Map.empty
+
     let mutable space = new Form()
 
+    // Methods
     member self.name = title
     member self.dims = Size (Point (width, height))
     member self.background = bcolor
@@ -56,6 +99,7 @@ type World(bcolor:Color, width:int, height:int, title:string, planets:Planet lis
     member self.simData = simDataMap
     member self.dError = errorMap
 
+    // Method for initializing GUI (form). Paints all planets and sun at initial positions.
     member self.BigBang() =
         space <- new Form(Text = self.name,
                           BackColor = self.background,
@@ -68,10 +112,14 @@ type World(bcolor:Color, width:int, height:int, title:string, planets:Planet lis
                                       Size(20, 20))
             e.Graphics.FillEllipse(brush, shape)
         space.Paint.Add (drawSun)
+    // Computes and moves all planets. Updates GUI (form) 
     member self.UpdateWorld() =
         for pl in planets do
             pl.Move()
         space.Refresh()
+    
+    // Computes simulated movement of World-instance (solar system) and average offset of
+    // simulated data compared to empirical data from NASA. Prints table of avg. offset in AU.
     member self.Simulate() =
         let days = inputDay()
         let mutable table = ""
@@ -100,6 +148,7 @@ type World(bcolor:Color, width:int, height:int, title:string, planets:Planet lis
         printfn "%s" table
 
 
+
 // Planet instances.
 let planets = [Planet("Mercury", Color.Brown, 5);
                Planet("Venus", Color.Orange, 10);
@@ -111,22 +160,22 @@ let planets = [Planet("Mercury", Color.Brown, 5);
                Planet("Neptune", Color.Blue, 11);
                Planet("Pluto", Color.LightSlateGray, 4)]
 
-// create solar system
+// World instance. Creates solar system.
 let solar = World(Color.Black, 600, 600, "Solar System", planets)
 solar.BigBang()
 
-// create time
+// Initializes a timer in order to update the World instance indefinitely.
 let timer = new Timer(Interval = 100,
                       Enabled = true)
 timer.Tick.Add (fun showtime -> solar.UpdateWorld())
 
-//Add the buttons
+// Adds the zoom-buttons.
 solar.system.Controls.Add Zibutton
 solar.system.Controls.Add Zobutton
 
-// initiates comparison of observed and simulated data
+// Initiates comparison of observed and simulated data.
 solar.Simulate()
 
-// let there be light
+// Let there be light!
 printfn "Launching graphical simulation of solar system, showing planetary movement from 01-01-2016 and indefinitely."
 Application.Run solar.system
