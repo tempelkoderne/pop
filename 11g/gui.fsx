@@ -206,7 +206,7 @@ printfn "    self.background = Color.Black : %b" (solar.background = (Color.Blac
 printfn "    self.system                   : %A" solar.system
 printfn "    self.BigBang() tested previously via GUI - otherwise GUI would not have launched properly."
 printfn "    self.UpdateWorld() tested previously via GUI - otherwise GUI animation would be impossible."
-printfn "    self.simData                  : %A" solar.simData.["Mercury"]
-printfn "    self.obsdata                  : %A" solar.obsData.["Mercury"]
-printfn "    self.dError                   : %A" solar.dError.["Mercury"]
+printfn "    self.simData                  : %A" solar.simData.["Mercury"].[5]
+printfn "    self.obsdata                  : %A" solar.obsData.["Mercury"].[5]
+printfn "    self.dError                   : %A" solar.dError.["Mercury"].[5]
 printfn "    self.Simulate() tested previously. Otherwise no comparison table would have been printed."
