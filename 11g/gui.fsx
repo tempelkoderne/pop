@@ -174,11 +174,11 @@ solar.system.Controls.Add Zibutton
 solar.system.Controls.Add Zobutton
 
 // Initiates comparison of observed and simulated data.
-// solar.Simulate()
+solar.Simulate()
 
 // Let there be light!
 printfn "Launching graphical simulation of solar system, showing planetary movement from 01-01-2016 and indefinitely."
-// Application.Run solar.system
+Application.Run solar.system
 
 
 
@@ -206,7 +206,7 @@ printfn "    self.background = Color.Black : %b" (solar.background = (Color.Blac
 printfn "    self.system                   : %A" solar.system
 printfn "    self.BigBang() tested previously via GUI - otherwise GUI would not have launched properly."
 printfn "    self.UpdateWorld() tested previously via GUI - otherwise GUI animation would be impossible."
-printfn "    self.simData                  : %A" solar.simData 
-printfn "    self.obsdata                  : %A" solar.obsData
-printfn "    self.dError                   : %A" solar.dError
+printfn "    self.simData                  : %A" solar.simData.["Mercury"]
+printfn "    self.obsdata                  : %A" solar.obsData.["Mercury"]
+printfn "    self.dError                   : %A" solar.dError.["Mercury"]
 printfn "    self.Simulate() tested previously. Otherwise no comparison table would have been printed."

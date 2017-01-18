@@ -1,6 +1,5 @@
 // TODO:
 // 1) produce brief report
-// 2) unit tests
 // (OPTIONAL) consider making offset a function of window size
 
 
