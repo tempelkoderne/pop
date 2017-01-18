@@ -48,15 +48,21 @@ let ( .* ) (x:float) (y:vector) = (x * (fst y), x * (snd y))
 
 // reads data
 let inputDay() =
-    let rec inputDay() =
-        printfn "How many days would you like to simulate?"
-        try
-            int (System.Console.ReadLine())
-        with
-            | _ -> inputDay()
-    let input = inputDay()
-    if input > 365 then printfn "Input greater than 365. Simulating 365 days."
-    min input 365
+    printf "How many days would you like to simulate?"
+    let rec getInput() =
+        printfn " Enter an integer between 1 and 365."
+        let input =
+            try
+                int (System.Console.ReadLine())
+            with
+                | _ -> printf "Invalid input." ; getInput()
+        if input < 1 || input > 365 then
+            printf "Invalid input."
+            getInput()
+        else
+            input
+    getInput()
+    
 
 let loadData(planet:string, days:int) =
     let stop = 2457388 + (int days)
