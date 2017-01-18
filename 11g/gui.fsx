@@ -72,22 +72,35 @@ type World(bcolor:Color, width:int, height:int, title:string, planets:Planet lis
         for pl in planets do
             pl.Move()
         space.Refresh()
-    member self.LoadData() =
+    member self.Simulate() =
         let days = inputDay()
+        let mutable table = ""
         for pl in planets do
+            // Load observed and calculate simulated positions for each planet.
             obsDataMap <- obsDataMap.Add (pl.name,
                                           (loadData(pl.name, days)))
             simDataMap <- simDataMap.Add (pl.name,
                                           (calcData(pl.name, days)))
+            // Compute average offset (distance between observed/simulated positions) for each planet.
             let compLenVec = Array.map2 (fun x y -> x .- y) simDataMap.[pl.name] obsDataMap.[pl.name]
             let compDist = Array.map (fun x -> sqrt (((fst x)**2.0) + ((snd x)**2.0))) compLenVec
             errorMap <- errorMap.Add (pl.name, compDist)
+            
+            // Write average offset to table for each planet.
+            let ar = errorMap.[(pl.name)]
+            let arLen = float ar.Length 
+            let sum = float (Array.sum ar)
+            let avg = sum / arLen
+            table <- table + (sprintf "    %-10s" (pl.name)) + (sprintf "%20s" (avg.ToString())) + "  AU\n"
+        // Print table.
+        printfn "Press any key to continue.\n"
+        System.Console.ReadKey() |> ignore
+        System.Console.Clear()
+        printfn "Average distance between observed and simulated planetary positions over %A days.\n" days
+        printfn "%s" table
 
 
-// create planet instances
-let mars = Planet("Mars", Color.Red, 20)
-let earth = Planet("Earth", Color.Blue, 20)
-
+// Planet instances.
 let planets = [Planet("Mercury", Color.Brown, 5);
                Planet("Venus", Color.Orange, 10);
                Planet("Earth", Color.Blue, 10);
@@ -111,8 +124,9 @@ timer.Tick.Add (fun showtime -> solar.UpdateWorld())
 solar.system.Controls.Add Zibutton
 solar.system.Controls.Add Zobutton
 
-// let there be light
-Application.Run solar.system
-
 // initiates comparison of observed and simulated data
-solar.LoadData()
+solar.Simulate()
+
+// let there be light
+printfn "Launching graphical simulation of solar system, showing planetary movement from 01-01-2016 and indefinitely."
+Application.Run solar.system
